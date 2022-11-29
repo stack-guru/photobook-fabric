@@ -1,0 +1,28 @@
+/* Times New Roman Navajo */
+@font-face {
+	font-family: 'Navajo';
+	src: url('/assets/fonts/navajo.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Navajo';
+	src: url('/assets/fonts/navajo_bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Navajo';
+	src: url('/assets/fonts/navajo_bolditalic.ttf') format('truetype');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Navajo';
+	src: url('/assets/fonts/navajo_italic.ttf') format('truetype');
+	font-weight: normal;
+	font-style: italic;
+}

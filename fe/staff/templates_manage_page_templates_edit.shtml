@@ -1,0 +1,665 @@
+<!--#include virtual="/fe/_blocks/header_client.html" -->
+
+<script src="/fe/assets/js/bignumber_2.1.4/bignumber.min.js"></script>
+<script src="/fe/assets/js/fabric/fabric.3.6.3.js"></script>
+<script src="/fe/assets/js/spectrum_1.7.1/spectrum.min.js"></script>
+<script src="/fe/assets/js/webfont_1.5.18/webfont.js"></script>
+<script src="/fe/assets/js/webfontloader_1.6.3/webfontloader.js"></script>
+
+<script src="/fe/assets/js/fabric/yb_support_load.js"></script>
+
+<script src="/fe/assets/js/jquery-ui_1.11.4/jquery-ui.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/fe/assets/css/spectrum_1.7.1/spectrum.min.css">
+<link rel="stylesheet" type="text/css" href="/fe/assets/css/jquery-ui_1.11.4/jquery-ui.min.css"/>
+<link rel="stylesheet" type="text/css" href="/fe/assets/css/fonts.css"/>
+<link rel="stylesheet" type="text/css" href="/fe/assets/css/navajo_fonts.css"/>
+
+<style>
+
+@media (max-width: 991px) {
+.mobile_button {
+	width: 100%;
+}
+}
+.image_menus, .text_menus {
+	background: transparent none repeat scroll 0 0;
+	border: 2px solid rgba(0,0,0,0.44);
+	height: auto;
+	padding: 8px;
+	margin-bottom: 0px;
+}
+
+.control-label.small {
+	text-align:left;
+}
+
+.panel {
+	margin-bottom:2px;
+}
+
+.panel-body > .form-group {
+	margin-bottom:8px;
+}
+
+div#footer {
+	margin-bottom: -50px !important;
+}
+
+.background_thumb {	
+	display:inline-block;
+	text-align:center;
+	position:relative;
+	border: 4px #FFF solid;	
+	margin:2px;
+	overflow:hidden;
+	width:100px;
+	height:100px;
+	border: 4px solid #FFF;
+}
+
+.background_thumb:hover {
+	border: 4px solid #22FF00;
+}
+
+.list_image  {	
+	display:inline-block;
+	text-align:center;
+	position:relative;
+	border: 4px #FFF solid;
+	max-width:204px;
+	max-height:110px;
+	margin:2px;
+	overflow:hidden;
+    background-color: #E0E0E06E;
+}
+
+.list_image:hover {
+	background-color: whitesmoke;
+	border: 4px solid #22FF00;	
+	cursor:pointer;	 
+}
+
+.list_image.active {
+	background-color: whitesmoke;
+	border: 4px solid #22FF00;
+	cursor:pointer;
+}
+
+div.client_border {
+	border: 4px #00F solid;
+}
+
+div.client_border:hover {
+	border: 4px #22FF00 solid;
+}
+
+
+.restore_item:hover, .template_item:hover {
+	background-color: whitesmoke;
+	border: 1px solid #000;
+	cursor:pointer;
+}
+
+.restore_item, .template_item {
+	border: 1px solid #FFF;	
+}
+
+.restore_thumb, .template_thumb, .graphic_thumb {	
+	display:inline-block;
+	text-align:center;
+	position:relative;
+	/*border: 4px #FFF solid;
+	max-width:204px;
+	max-height:104px;*/
+	margin:2px;
+	overflow:hidden;
+}
+
+.active_template { border-color:red; }
+
+/* crop_div */
+.ui-resizable-handle {
+	width: 10px;
+	height: 10px;
+	background-color: transparent;
+	border: 1px solid #BDBDBD;
+}
+#crop_div {
+  background-color:transparent;
+  position: relative;
+  border: 1px dashed #BDBDBD; 
+  cursor:pointer;
+}
+.ui-resizable-n{
+	 top: -5px;
+	left:48%;
+}
+.ui-resizable-e
+{
+   right:-5px;
+	 top:48%;	
+}
+.ui-resizable-s
+{
+	 bottom: -5px;
+	left: 48%;
+}
+.ui-resizable-w
+{
+	 left:-5px;
+	 top:48%;
+}
+.ui-resizable-nw
+{
+	 left: -5px;
+	top: -5px;	
+}
+.ui-resizable-ne
+{
+	 top: -5px;
+	 right: -5px; 
+}
+.ui-resizable-sw
+{
+	bottom: -5px;
+	left: -5px;
+}
+.ui-resizable-se
+{
+	bottom: -5px;
+	right: -5px;
+}
+
+
+
+</style>
+<script>
+
+//variables for yb_support.js
+var img_path = '/assets/images/';
+var base_url = '/';
+var rotateSRC = '/assets/images/rotate-icon.png';	
+var scale1SRC = '/assets/images/resize-icon.png';	
+var scale2SRC = '/assets/images/resize_text-icon.png';
+var rotationCursorSRC = '/assets/images/rotate_cursor.png';
+var cropping = false;
+var thisTemplate = null;
+var fonts = null; 
+var restore_id = null;
+
+var numPages = 1;
+var canvasWidth = 1160;
+var canvasHeight = 1482;
+//var safe = 36, trim = 24, bleed = 12;
+var safe = 48, trim = 32, bleed = 16;
+var gutter = 40;
+
+// ******************************************************************
+// Loaded
+// ******************************************************************
+var pageParams = getUrlParams();
+var pageData = new Array();
+var isLoaded = false;
+var isReady = false;
+
+$.ajax({
+	url: '/templates/page_templates_edit_data_ajax/'+pageParams.template_id,
+	type: "POST",
+	dataType: 'json',
+	error: ajax_error,
+	success: data_loaded
+});
+
+function data_loaded(data)
+{
+	console.log('template data_loaded --------------', data);
+	pageData = data;
+	fonts = pageData.fonts;
+	isLoaded = true;
+	loaded_and_ready();
+}
+// ******************************************************************
+// Ready
+// ******************************************************************
+$(document).ready(function() {
+
+	document.title = 'Yearbook Master : Edit Template';
+
+	isReady = true;
+	loaded_and_ready();
+});
+
+
+// ******************************************************************
+// Loaded and Ready
+// ******************************************************************
+
+function loaded_and_ready()
+{
+	if (!isLoaded || !isReady)
+		return;
+
+	$.preloadImages("/assets/images/rotate-icon.png","/assets/images/resize-icon.png","/assets/images/resize_text-icon.png",
+		"/assets/images/rotate_cursor.png","/assets/images/bring_front.png","/assets/images/send_back.png","/assets/images/crop_zoom.png",
+		"/assets/images/copy.png","/assets/images/brightness_contrast.png","/assets/images/opacity.png",
+		"/assets/images/grayscale.png","/assets/images/border.png","/assets/images/shadow.png",
+		"/assets/images/trash.png","/assets/images/opacity.png","/assets/images/font-icon.png",
+		"/assets/images/indicator_big.gif","/assets/images/green_check_circle.png",
+		"/assets/images/yellow_check_circle.png");
+
+	thisTemplate = pageParams.template_id;
+	
+	if (pageData.restore_id_message) 	
+		restore_id = pageData.restore_id_message;
+
+	if (pageData.message)
+		$("#messages").html(pageData.message).show().delay(5000).fadeOut(1000);
+	
+	ybSupportLoad();
+};
+
+</script>
+
+<body>
+<div class="container">
+	<ol class="breadcrumb">	   
+		<li><a href="/home">Staff Home</a></li>
+		<li><a href="/templates/page_templates">Manage Page Templates</a></li>
+		<li class="active">Edit Page Template</li>
+	</ol>
+	<div id="messages" class="alert alert-info text-center" style="display:none;"></div>
+  	<div id="heading" class="text-center"><h4>Edit Template</h4></div>  
+  	<div class="section_border">
+		<div class="row text-center">
+			<ul class="nav">
+				<button type="button" id="add_text" class="btn btn-primary mobile_button"><span class="glyphicon glyphicon-text-size"></span> Add Text</button>
+				<button type="button" id="add_placeholder" class="btn btn-primary mobile_button inline-block-left-space-fix"><span class="glyphicon glyphicon-picture"></span> Add Placeholder</button>
+				<div class="btn-group mobile_button inline-block-left-space-fix">
+					<button type="button" class="btn btn-primary dropdown-toggle mobile_button" data-toggle="dropdown"> <span class="glyphicon glyphicon-leaf"></span> Add Graphics/Clipart<span class="caret"></span></button>
+					<ul class="dropdown-menu mobile_button" role="menu">
+						<li id="add_page_border"><a href="">Add A Page Border</a></li>
+						<li id="add_clipart"><a href="">Add Clipart</a></li>
+					</ul>
+				</div>
+				<div class="btn-group mobile_button inline-block-left-space-fix">
+					<button type="button" class="btn btn-primary dropdown-toggle mobile_button" data-toggle="dropdown"> <span class="glyphicon glyphicon-cog"></span> Page Settings<span class="caret"></span></button>
+					<ul class="dropdown-menu mobile_button" role="menu">
+						<li id="add_background"><a href="">Choose Background</a></li>
+						<li id="change_grid"><a href="">Grid Settings</a></li>
+						<li id="restore_page"><a href="">Restore Page</a></li>
+						<li id="edit_template"><a href="">Edit A Page Template</a></li>
+					</ul>
+				</div>
+				<button type="button" id="save" class="btn btn-primary mobile_button inline-block-left-space-fix">
+				<span class="glyphicon glyphicon-save"></span> Save</button>
+	
+			</ul>
+		</div>		
+		<div id="load_status_div" class="row" style="display:none;">
+			<div>&nbsp;</div>
+			<div class="progress">		  			  
+				<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+					<span id="load_status" style="color:#FFF"></span>
+				</div>
+				<div class="text-center">Saving Data...Please Hold</div>
+			</div> 
+		</div>	  
+		<div class="row text-center" id="loading" style="display:none; margin-bottom:10px;">	   
+			<div>&nbsp;</div> 
+			<i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i><br>
+			...Page Loading...			
+		</div>			
+<!-- 		
+		<div class="row" id="template_div" style="display:;">
+			<p>&nbsp;</p>
+			<div class="panel panel-primary">
+				<h4 class="panel-heading panel-title">
+					<div class="form-group">				
+						<div class="col-md-6" id="template_div_title">Edit Template</div>
+						<div pnl="template_div" style="cursor:pointer" title="Close" class="col-md-6 text-right close_option">
+						<span class="glyphicon glyphicon-remove-circle" style="font-size:1.5em; top:-4px;"></span></div>
+					</div>					
+				</h4>
+			
+				<div class="panel-body">
+					<div id="template_select_div">						
+						<div class="form-group form-inline">
+							<div class="col-md-12">
+								<label id="role_label" for="template_category" class="control-label text-right">Select A Template Category To View:</label>
+								<br>
+								<select id="template_category" class="form-control" style="width:100%;">						
+								</select>								 
+								<div id="template_message" class="col-md-4 small"></div>
+								<label id="role_label" for="" style="width:100%" class="control-label text-center">Select A Template To Edit</label>
+							</div>				   
+												
+						</div> 
+					</div>					
+					<div style="overflow-y:hidden; overflow-x:auto; clear:both;">						
+						<div id="template_thumbs" class="text-left" style="width:;height:300px;"></div> 
+					</div>					  
+				</div>
+			</div>
+		</div>
+ -->
+		<div class="row" id="plc_div" style="display:none;">
+			<p>&nbsp;</p>
+			<div class="panel panel-primary">
+				<h4 class="panel-heading panel-title">
+					<div class="form-group">
+						<div class="col-md-6" id="plc_div_title">Add Placeholder</div>
+						<div pnl="plc_div" style="cursor:pointer" title="Close" class="col-md-6 text-right close_option">
+							<span class="glyphicon glyphicon-remove-circle" style="font-size:1.5em; top:-4px;"></span></div>
+					</div>
+				</h4>
+
+				<div class="panel-body">
+					<div id="plc_select_div">
+						<div class="form-group">
+							<label class="control-label col-md-2 text-right">Choose aspect ratio</label>
+							<div class="col-md-2">
+								<select class="form-control" id="aspect_ratio_select">
+									<option value="1:1">1:1</option>
+									<option value="3:2">3:2 (landscape)</option>
+									<option value="4:3">4:3 (landscape)</option>
+									<option value="5:4">5:4 (landscape)</option>
+									<option value="16:9">16:9 (landscape)</option>
+									<option value="2:3">2:3 (portrait)</option>
+									<option value="3:4">3:4 (portrait)</option>
+									<option value="4:5">4:5 (portrait)</option>
+									<option value="9:16">9:16 (portrait)</option>
+									<option value="custom">Custom</option>
+								</select>
+							</div>
+							<div class="col-md-3">
+								<div class="custom_ratio_div" style="display: none">
+									<div class="">
+										<label>Aspect Ratio Width</label>
+										<input type="number" min="1" id="aspect_width" value="1">
+									</div>
+									<div class="">
+										<label>Aspect Ratio Height</label>
+										<input type="number" min="1" id="aspect_height" value="1">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<button type="button" id="add_plc_to_canvas" class="btn btn-primary mobile_button btn-sm">Add To Canvas</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row" id="clipart_div" style="display:none;">
+			<p>&nbsp;</p>
+			<div class="panel panel-primary">
+				<h4 class="panel-heading panel-title">
+					<div class="form-group">				
+						<div class="col-md-6" id="clipart_div_title">Add Clipart</div>
+						<div pnl="clipart_div" style="cursor:pointer" title="Close" class="col-md-6 text-right close_option">
+						<span class="glyphicon glyphicon-remove-circle" style="font-size:1.5em; top:-4px;"></span></div>
+					</div>					
+				</h4>			
+				<div class="panel-body">
+					<div id="clipart_select_div">
+						<div class="form-group col-md-4">
+							<label id="role_label" for="clipart_folder" class="control-label text-right">Select A Category:</label>
+							<div class="">
+								<select id="clipart_folder" class="form-control">
+									<option value="">Select</option>
+								</select> 
+							</div>
+						</div>
+						<div class="form-group col-md-2">
+							<br>
+							<div>
+							</div>
+						</div>
+						<div class="form-group col-md-3">
+							<label for="clipart_search_term" class="control-label text-right">Search Clipart:</label>
+							<div class="">
+								<input type="text" class="form-control" name="" id="clipart_search_term">
+							</div>
+						</div>
+						<div class="form-group col-md-1">
+							<label id="role_label" for="" class="control-label text-right">&nbsp;</label>
+							<div class="">
+								<button type="submit" cat="Clipart" id="clipart_search" class="image_search btn btn-primary mobile_button btn-sm">Search</button>
+							</div>
+						</div>
+						<div class="form-group col-md-2">
+							<label id="role_label2" for="" class="control-label text-right">&nbsp;</label>
+							<div class="">
+								<button type="button" id="add_clipart_to_canvas" class="btn btn-primary mobile_button btn-sm">Add To Canvas</button>
+							</div>
+						</div>
+						<div class="form-group col-md-2">
+							<div id="clipart_message" class="" style="clear:both; color:red"></div>
+						</div>
+					</div>
+					<div style="overflow-y:hidden; overflow-x:auto; clear:both;">
+						<div id="clipart_thumbs" class="text-left" style="width:;height:110px; "></div> 
+					</div>   
+				</div>
+			</div>
+		</div>
+		<div class="row" id="border_div" style="display:none;">
+			<p>&nbsp;</p>
+			<div class="panel panel-primary">
+				<h4 class="panel-heading panel-title">
+					<div class="form-group">				
+						<div class="col-md-6" id="border_div_title">Add Border</div>
+						<div pnl="border_div" style="cursor:pointer" title="Close" class="col-md-6 text-right close_option">
+						<span class="glyphicon glyphicon-remove-circle" style="font-size:1.5em; top:-4px;"></span></div>
+					</div>					
+				</h4>
+				<div class="panel-body">
+					<div id="border_select_div">
+						<div class="form-group col-md-4">
+							<label id="role_label" for="border_folder" class="control-label text-right">Select A Category:</label>
+							<div class="">
+								<select id="border_folder" class="form-control">
+									<option value="">Select</option>
+								</select> 
+							</div>
+						</div>
+						<div class="form-group col-md-2">
+							<br/>
+							<div>
+								<button type="button" id="remove_border" style="padding: 1px 5px; font-size:14px;" class="btn btn-default mobile_button">Remove Border <i style="font-size: 1.2em;" class="fa fa-trash"></i></button>			 
+							</div>
+						</div>
+						<div class="form-group col-md-3">
+							<label for="border_search_term" class="control-label text-right">Search Borders:</label>
+							<div class="">
+								<input type="text" class="form-control" name="" id="border_search_term">
+							</div>
+						</div>
+						<div class="form-group col-md-1">
+							<label id="role_label" for="" class="control-label text-right">&nbsp;</label>
+							<div class="">
+								<button type="submit" cat="Border" id="border_search" class="image_search btn btn-primary mobile_button btn-sm">Search</button>
+							</div>
+						</div>
+						<div class="form-group col-md-2">
+							<div id="border_message" class="" style="clear:both; color:red"></div>
+						</div>
+					</div>
+					<div style="overflow-y:hidden; overflow-x:auto; clear:both;">
+						<div id="border_thumbs" class="text-left" style="width:;height:110px; "></div> 
+					</div>   
+				</div>
+			</div>
+		</div>
+		<div class="row" id="background_div" style="display:none;" >
+			 <p>&nbsp;</p>
+			<div class="panel panel-primary">
+				<h4 class="panel-heading panel-title">				
+					<div class="form-group">				
+						<div class="col-md-6">Add Background</div>
+						<div pnl="background_div" style="cursor:pointer" title="Close" class="col-md-6 text-right close_option">
+						<span class="glyphicon glyphicon-remove-circle" style="font-size:1.5em; top:-4px;"></span></div>
+					</div> 
+				</h4>
+				<div class="panel-body">
+					<div id="background_select_div">
+						<div class="form-group col-md-4">
+							<label id="role_label" for="background_folder" class="control-label text-right">Select A Category:</label>
+							<div class="">
+								<select id="background_folder" class="form-control">
+									<option value="">Select</option>
+								</select> 
+							</div>
+						</div>
+						<div class="form-group col-md-2">
+							<br>
+							<div>
+								<button type="button" id="remove_background" style="padding: 1px 5px; font-size:14px;" class="btn btn-default mobile_button">Remove Background <i style="font-size: 1.2em;" class="fa fa-trash"></i></button>			 
+							</div>
+						</div>
+						<div class="form-group col-md-3">
+							<label for="background_search_term" class="control-label text-right">Search Backgrounds:</label>
+							<div class="">
+								<input type="text" class="form-control" name="" id="background_search_term">
+							</div>
+						</div>
+						<div class="form-group col-md-1">
+							<label id="role_label" for="" class="control-label text-right">&nbsp;</label>
+							<div class="">
+								<button type="submit" cat="Background" id="background_search" class="image_search btn btn-primary mobile_button btn-sm">Search</button>
+							</div>
+						</div>
+						<div class="form-group col-md-2">
+							<div id="background_message" class="" style="clear:both; color:red; "></div>
+						</div>
+					</div>
+					<div style="overflow-y:hidden; overflow-x:auto; clear:both;">
+						<div id="background_thumbs" class="text-left" style="width:;height:110px; "></div> 
+					</div>   
+				</div>
+			</div>
+		</div>
+		
+		<div class="row" id="restore_div" style="display:none;" >
+			 <p>&nbsp;</p>
+			<div class="panel panel-primary">
+				<h4 class="panel-heading panel-title">				
+					<div class="form-group">				
+						<div class="col-md-6">Restore Page</div>
+						<div pnl="restore_div" style="cursor:pointer" title="Close" class="col-md-6 text-right close_option">
+						<span class="glyphicon glyphicon-remove-circle" style="font-size:1.5em; top:-4px;"></span></div>
+					</div> 
+				</h4>
+				<div class="panel-body">
+					<div style="overflow-y:hidden; overflow-x:auto;">
+						<div id="restore_thumbs" class="text-left" style="width:;height:320px; "></div> 
+					</div>   
+				</div>
+			</div>
+		</div>
+				
+		<div class="row" id="grid_settings_div" style="display:none;" >
+			 <p>&nbsp;</p>
+			<div class="col-md-6 col-md-offset-3">
+				<div class="panel panel-primary">
+					<h4 class="panel-heading panel-title">				
+						<div class="form-group">				
+							<div class="col-md-6">Grid Settings</div>
+							<div pnl="grid_settings_div" style="cursor:pointer" title="Close" class="col-md-6 text-right close_option">
+							<span class="glyphicon glyphicon-remove-circle" style="font-size:1.5em; top:-4px;"></span></div>
+						</div> 
+					</h4>
+					<div class="panel-body text-center">
+						<div>&nbsp;</div> 
+						<div class="form-horizontal">
+							<div class="form-group" id="role_input" style="display:;">					
+								<label id="role_label" for="role" class="col-md-3 col-md-offset-2 control-label">Show Grid:</label>
+								<div class="col-md-3">
+									<select id="show_grid" class="form-control">
+										<option value="YES">YES</option>
+										<option value="NO">NO</option>										
+									</select>   
+								</div>								
+							</div>
+							<div id="grid_options_div" style="display:none;">
+								<div class="form-group" id="role_input" style="display:;">					
+									<label id="role_label" for="role" class="col-md-3 col-md-offset-2 control-label">Snap To Grid:</label>
+									<div class="col-md-3">
+										<select id="snap_grid" class="form-control">
+											<option value="YES">YES</option>
+											<option value="NO">NO</option>										
+										</select>   
+									</div>								
+								</div>
+								<div class="form-group" id="role_input" style="display:;">					
+									<label id="role_label" for="role" class="col-md-3 col-md-offset-2 control-label">Grid Spacing:</label>
+									<div class="col-md-3">
+										<select id="grid_spacing" class="form-control">
+											<option value="10">Smallest</option>
+											<option value="20">Small</option>
+											<option value="30">Medium</option>
+											<option value="40">Large</option>
+											<option value="50">Largest</option>
+										</select>   
+									</div>								
+								</div>
+							</div>
+							<div class="col-md-3 col-md-offset-2 text-right">
+								<button id="update_grid" type="button" class="btn btn-primary">Update</button>
+							</div>
+						</div>
+						   
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group" style="margin-bottom: 25px;">
+			<h4 id="template_title" class="text-center" ></h4>
+			<div>&nbsp;</div>
+	   		<div class="undo_div col-md-6" style="display:;" >			 
+				<ul class="nav">
+					<button disabled="disabled" type="button" class="undo btn btn-primary mobile_button btn-sm"><i style="font-size: 1.2em;" class="fa fa-undo"></i> Undo</button>
+					<button disabled="disabled" type="button" class="redo btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-repeat"></i> Redo</button>
+				</ul>				
+			</div>
+			<div class="zoom_div col-md-6 text-right" style="display:;">
+				<ul class="nav">
+					<div class="zoom_status text-center mobile_button" style="display:inline-block;vertical-align:bottom;font-size:12px;">Zoom Scale: 1.0x</div>
+					<button type="button" class="canvas-zoom-in btn btn-primary mobile_button btn-sm"><i style="font-size: 1.2em;" class="fa fa-search-plus"></i> Zoom In</button>
+					<button type="button" class="canvas-zoom-out btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-search-minus"></i> Zoom Out</button>
+					<button type="button" class="canvas-zoom-reset btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-search"></i> Zoom Reset</button>
+				</ul>				
+			</div>
+		</div>
+		
+		<div id="canvas_container">
+			<div class="" id="canvas_size" style="">					 
+			  <div id="canvas_div" class="center-block" style="position:relative;">
+				<p>
+				  <canvas id="c"></canvas>			  
+				</p>
+			  </div>			
+			</div>
+		</div> 
+		<div class="form-group" style="margin-bottom:40px;">			
+	   		<div class="undo_div col-md-6" style="display:;" >			 
+				<ul class="nav">
+					<button disabled="disabled" type="button" class="undo btn btn-primary mobile_button btn-sm"><i style="font-size: 1.2em;" class="fa fa-undo"></i> Undo</button>
+					<button disabled="disabled" type="button" class="redo btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-repeat"></i> Redo</button>
+				</ul>				
+			</div>
+			<div class="zoom_div col-md-6 text-right" style="display:;">
+				<ul class="nav">
+					<div class="zoom_status text-center mobile_button" style="display:inline-block;vertical-align:bottom;font-size:12px;">Zoom Scale: 1.0x</div>
+					<button type="button" class="canvas-zoom-in btn btn-primary mobile_button btn-sm"><i style="font-size: 1.2em;" class="fa fa-search-plus"></i> Zoom In</button>
+					<button type="button" class="canvas-zoom-out btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-search-minus"></i> Zoom Out</button>
+					<button type="button" class="canvas-zoom-reset btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-search"></i> Zoom Reset</button>
+				</ul>				
+			</div>
+		</div>	   
+		  
+  </div>
+</div>
+<!--#include virtual="/fe/_blocks/footer.html" -->

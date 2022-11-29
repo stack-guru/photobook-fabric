@@ -1,0 +1,171 @@
+{
+    "fonts": [
+        {
+			"name": "Arial",
+			"url": "/assets/fonts/arial.ttf"
+		},
+		{
+			"name": "Arial",
+			"url": "/assets/fonts/arial_bold.ttf"
+		},
+		{
+			"name": "Arial",
+			"url": "/assets/fonts/arial_bolditalic.ttf"
+		},
+		{
+			"name": "Arial",
+			"url": "/assets/fonts/arial_italic.ttf"
+		},
+		{
+			"name": "Calibri",
+			"url": "/assets/fonts/calibri.ttf"
+		},
+		{
+			"name": "Calibri",
+			"url": "/assets/fonts/calibri_bold.ttf"
+		},
+		{
+			"name": "Calibri",
+			"url": "/assets/fonts/calibri_bolditalic.ttf"
+		},
+		{
+			"name": "Calibri",
+			"url": "/assets/fonts/calibri_italic.ttf"
+		},
+		{
+			"name": "Comic Sans MS",
+			"url": "/assets/fonts/comicsansms.ttf"
+		},
+		{
+			"name": "Comic Sans MS",
+			"url": "/assets/fonts/comicsansms_bold.ttf"
+		},
+		{
+			"name": "Comic Sans MS",
+			"url": "/assets/fonts/comicsansms_italic.ttf"
+		},
+		{
+			"name": "Courier",
+			"url": "/assets/fonts/courier.ttf"
+		},
+		{
+			"name": "Courier",
+			"url": "/assets/fonts/courier_bold.ttf"
+		},
+		{
+			"name": "Courier",
+			"url": "/assets/fonts/courier_bolditalic.ttf"
+		},
+		{
+			"name": "Courier",
+			"url": "/assets/fonts/courier_italic.ttf"
+		},
+		{
+			"name": "Courier New",
+			"url": "/assets/fonts/couriernew.ttf"
+		},
+		{
+			"name": "Courier New",
+			"url": "/assets/fonts/couriernew_bold.ttf"
+		},
+		{
+			"name": "Courier New",
+			"url": "/assets/fonts/couriernew_bolditalic.ttf"
+		},
+		{
+			"name": "Courier New",
+			"url": "/assets/fonts/couriernew_italic.ttf"
+		},
+		{
+			"name": "Delicious",
+			"url": "/assets/fonts/delicious.ttf"
+		},
+		{
+			"name": "Delicious",
+			"url": "/assets/fonts/delicious_bold.ttf"
+		},
+		{
+			"name": "Delicious",
+			"url": "/assets/fonts/delicious_bolditalic.ttf"
+		},
+		{
+			"name": "Delicious",
+			"url": "/assets/fonts/delicious_italic.ttf"
+		},
+		{
+			"name": "Georgia",
+			"url": "/assets/fonts/georgia.ttf"
+		},
+		{
+			"name": "Georgia",
+			"url": "/assets/fonts/georgia_bold.ttf"
+		},
+		{
+			"name": "Georgia",
+			"url": "/assets/fonts/georgia_bolditalic.ttf"
+		},
+		{
+			"name": "Georgia",
+			"url": "/assets/fonts/georgia_italic.ttf"
+		},
+		{
+			"name": "Helvetica",
+			"url": "/assets/fonts/helvetica.ttf"
+		},
+		{
+			"name": "Helvetica",
+			"url": "/assets/fonts/helvetica_bold.ttf"
+		},
+		{
+			"name": "Helvetica",
+			"url": "/assets/fonts/helvetica_bolditalic.ttf"
+		},
+		{
+			"name": "Helvetica",
+			"url": "/assets/fonts/helvetica_italic.ttf"
+		},
+		{
+			"name": "Impact",
+			"url": "/assets/fonts/impact.ttf"
+		},
+		{
+			"name": "Monaco",
+			"url": "/assets/fonts/monaco.ttf"
+		},
+		{
+			"name": "Myriad Pro",
+			"url": "/assets/fonts/myriadpro.ttf"
+		},
+		{
+			"name": "Myriad Pro",
+			"url": "/assets/fonts/myriadpro_bold.ttf"
+		},
+		{
+			"name": "Myriad Pro",
+			"url": "/assets/fonts/myriadpro_bolditalic.ttf"
+		},
+		{
+			"name": "Myriad Pro",
+			"url": "/assets/fonts/myriadpro_italic.ttf"
+		},
+		{
+			"name": "Verdana",
+			"url": "/assets/fonts/verdana.ttf"
+		},
+		{
+			"name": "Verdana",
+			"url": "/assets/fonts/verdana_bold.ttf"
+		},
+		{
+			"name": "Verdana",
+			"url": "/assets/fonts/verdana_bolditalic.ttf"
+		},
+		{
+			"name": "Verdana",
+			"url": "/assets/fonts/verdana_italic.ttf"
+		}
+    ]
+}
+
+
+

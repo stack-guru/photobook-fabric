@@ -1,0 +1,44 @@
+/* grid stuff -> */
+
+.pagination > li > a, .pagination > li > span {
+    background-color: inherit;
+    border: 1px solid #ddd;
+    color: #337ab7;
+    float: left;
+    line-height: inherit;
+    margin-left: -1px;
+    padding: inherit;
+    position: relative;
+    text-decoration: none;
+	height:inherit;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+thead input.search_init, thead select.search_init {
+	color:#999;
+	font-weight:normal;
+}
+
+thead input.text_filter , thead select.select_filter {
+	font-weight:normal;
+}
+
+table.dataTable tbody td.sorting_1 {
+    background-color: whitesmoke !important;
+	color:#333;
+}
+
+/*
+table.dataTable.stripe tbody > tr.odd.selected, 
+table.dataTable.stripe tbody > tr.odd > .selected, 
+table.dataTable.display tbody > tr.odd.selected, 
+table.dataTable.display tbody > tr.odd > .selected {
+    background-color: #2aabd2;
+}*/
+
+/*table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
+    color: white;
+}*/
+
+/* <- grid stuff */
