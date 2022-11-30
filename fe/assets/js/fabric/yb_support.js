@@ -55,35 +55,35 @@ $(document).ready(function () {
 	}
 
 	fabric.Canvas.prototype.getCornerCursor = function (corner, target) {
-		var cursorOffset = {
-			mt: 0, // n
-			tr: 1, // ne
-			mr: 2, // e
-			br: 3, // se
-			mb: 4, // s
-			bl: 5, // sw
-			ml: 6, // w
-			tl: 7 // nw
-		}
-
-		if (corner === 'bl') {
-			this.setCursor(this.rotationCursor);
-		}
-		else if (corner === 'br') {
-			//change icon if for text.
-			if (target.type == "CzImage")
-				this.setCursor('se-resize');
-			else if (target.type == "Textbox")
+		switch (corner) {
+			case 'bl':
+			case 'mtr':
+				this.setCursor(this.rotationCursor);
+				return;
+			case 'ml':
+			case 'mr':
 				this.setCursor('w-resize');
+				return;
+			case 'mt':
+			case 'mb':
+				this.setCursor('ns-resize');
+				return;
+			case 'tl':
+				this.setCursor('se-resize');
+				return;
+			case 'tr':
+				this.setCursor('nesw-resize');
+				return;
+			case 'br':
+				if (target.type == "Textbox")
+					this.setCursor('w-resize');
+				else
+					this.setCursor('se-resize');
+				return;
+			default:
+				this.setCursor(this.defaultCursor);
+				return false;
 		}
-		// else if (corner in cursorOffset) {
-		// 	this.setCursor(this._getRotatedCornerCursor(corner, target));
-		// }
-		else {
-			this.setCursor(this.defaultCursor);
-			return false;
-		}
-
 	}
 
 	fabric.Canvas.prototype._getActionFromCorner = function (alreadySelected, corner, e) {
@@ -102,7 +102,7 @@ $(document).ready(function () {
 			case 'bl':
 				return 'rotate';
 			case 'br':
-				if (aObjects[0].type === "Textbox") return 'scaleX'
+				if (aObjects.length === 1 && aObjects[0].type === 'Textbox') return 'scaleX'
 			default:
 				return 'scale';
 		}
@@ -189,6 +189,8 @@ $(document).ready(function () {
 		}
 		this._setLineDash(ctx, styleOverride.cornerDashArray || this.cornerDashArray, null);
 
+		const iconSize = 25
+
 		// top-left
 		this._drawControl('tl', ctx, methodName,
 			left,
@@ -199,35 +201,28 @@ $(document).ready(function () {
 			left + width,
 			top, styleOverride);
 
-		// bottom-left
-		//   this._drawControl('bl', ctx, methodName,
-		//     left,
-		//     top + height, styleOverride);
+		//bottom-left
+		this._drawControl('bl', ctx, methodName,
+			left,
+			top + height, styleOverride);
 
-		//   // bottom-right
-		//   this._drawControl('br', ctx, methodName,
-		//     left + width,
-		//     top + height, styleOverride);
-
-		//bottom-left hack
-		var rotate = new Image(), rotateLeft, rotateTop;
+		var rotate = new Image();
 		rotate.src = rotateSRC;
-		rotateLeft = left;
-		rotateTop = top + height;
+		ctx.drawImage(rotate, left, top + height, iconSize, iconSize);
 
-		ctx.drawImage(rotate, rotateLeft, rotateTop, 25, 25);
+		//bottom-right
+		this._drawControl('br', ctx, methodName,
+			left + width,
+			top + height, styleOverride);
 
-		//bottom-right hack
-		var scale = new Image(), scaleLeft, scaleTop;
-		//change icon if for text.
+		var scale = new Image();
 		if (this.type == "CzImage")
 			scale.src = scale1SRC;
 		else if (this.type == "Textbox")
 			scale.src = scale2SRC;
-		scaleLeft = left + width;
-		scaleTop = top + height;
-
-		ctx.drawImage(scale, scaleLeft, scaleTop, 25, 25);
+		else
+			scale.src = scale1SRC;
+		ctx.drawImage(scale, left + width, top + height, iconSize, iconSize);
 
 		if (!this.get('lockUniScaling')) {
 
