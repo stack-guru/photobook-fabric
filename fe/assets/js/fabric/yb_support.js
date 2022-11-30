@@ -76,9 +76,9 @@ $(document).ready(function () {
 			else if (target.type == "Textbox")
 				this.setCursor('w-resize');
 		}
-		else if (corner in cursorOffset) {
-			this.setCursor(this._getRotatedCornerCursor(corner, target));
-		}
+		// else if (corner in cursorOffset) {
+		// 	this.setCursor(this._getRotatedCornerCursor(corner, target));
+		// }
 		else {
 			this.setCursor(this.defaultCursor);
 			return false;
@@ -86,23 +86,26 @@ $(document).ready(function () {
 
 	}
 
-	fabric.Canvas.prototype._getActionFromCorner = function (alreadySelected, corner, target) {
-		const aObjects = this.getActiveObjects()
-
-		var action = 'drag';
-		if (corner) {
-			action = (corner === 'mr')
-				? 'move'
-				: (corner === 'mt' || corner === 'mb')
-					? 'scaleY'
-					: corner === 'bl'
-						? 'rotate'
-						: aObjects[0].type === "Textbox" ?
-							'scaleX'
-							: 'scale';
+	fabric.Canvas.prototype._getActionFromCorner = function (alreadySelected, corner, e) {
+		if (!corner || !alreadySelected) {
+			return 'drag';
 		}
 
-		return action;
+		const aObjects = this.getActiveObjects()
+		switch (corner) {
+			case 'ml':
+			case 'mr':
+				return 'scaleX';
+			case 'mt':
+			case 'mb':
+				return 'scaleY';
+			case 'bl':
+				return 'rotate';
+			case 'br':
+				if (aObjects[0].type === "Textbox") return 'scaleX'
+			default:
+				return 'scale';
+		}
 	}
 
 	fabric.Object.prototype.drawBorders = function (ctx) {
@@ -161,52 +164,58 @@ $(document).ready(function () {
 		return this;
 	}
 
-	fabric.Object.prototype.drawControls = function (ctx) {
+
+	fabric.Object.prototype.drawControls = function (ctx, styleOverride) {
 		if (!this.hasControls)
 			return this;
 
-		var wh = this._calculateCurrentDimensions(true),
+		styleOverride = styleOverride || {};
+		var wh = this._calculateCurrentDimensions(),
 			width = wh.x,
 			height = wh.y,
-			left = -(width / 2),
-			top = -(height / 2),
-			scaleOffset = this.cornerSize / 2,
-			methodName = this.transparentCorners ? 'strokeRect' : 'fillRect';
+			scaleOffset = styleOverride.cornerSize || this.cornerSize,
+			left = -(width + scaleOffset) / 2,
+			top = -(height + scaleOffset) / 2,
+			transparentCorners = typeof styleOverride.transparentCorners !== 'undefined' ?
+				styleOverride.transparentCorners : this.transparentCorners,
+			hasRotatingPoint = typeof styleOverride.hasRotatingPoint !== 'undefined' ?
+				styleOverride.hasRotatingPoint : this.hasRotatingPoint,
+			methodName = transparentCorners ? 'stroke' : 'fill';
 
 		ctx.save();
-
-		ctx.lineWidth = 1;
-
-		ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;
-		ctx.strokeStyle = ctx.fillStyle = this.cornerColor;
+		ctx.strokeStyle = ctx.fillStyle = styleOverride.cornerColor || this.cornerColor;
+		if (!this.transparentCorners) {
+			ctx.strokeStyle = styleOverride.cornerStrokeColor || this.cornerStrokeColor;
+		}
+		this._setLineDash(ctx, styleOverride.cornerDashArray || this.cornerDashArray, null);
 
 		// top-left
 		this._drawControl('tl', ctx, methodName,
-			left - scaleOffset,
-			top - scaleOffset);
+			left,
+			top, styleOverride);
 
 		// top-right
 		this._drawControl('tr', ctx, methodName,
-			left + width - scaleOffset,
-			top - scaleOffset);
+			left + width,
+			top, styleOverride);
 
 		// bottom-left
-		/*this._drawControl('bl', ctx, methodName,
-		left - scaleOffset,
-		top + height - scaleOffset);*/
+		//   this._drawControl('bl', ctx, methodName,
+		//     left,
+		//     top + height, styleOverride);
+
+		//   // bottom-right
+		//   this._drawControl('br', ctx, methodName,
+		//     left + width,
+		//     top + height, styleOverride);
 
 		//bottom-left hack
 		var rotate = new Image(), rotateLeft, rotateTop;
 		rotate.src = rotateSRC;
-		rotateLeft = left - scaleOffset; //X;
-		rotateTop = top + height - scaleOffset;
+		rotateLeft = left;
+		rotateTop = top + height;
 
 		ctx.drawImage(rotate, rotateLeft, rotateTop, 25, 25);
-
-		// bottom-right
-		/*this._drawControl('br', ctx, methodName,
-		left + width - scaleOffset,
-		top + height - scaleOffset);*/
 
 		//bottom-right hack
 		var scale = new Image(), scaleLeft, scaleTop;
@@ -215,11 +224,40 @@ $(document).ready(function () {
 			scale.src = scale1SRC;
 		else if (this.type == "Textbox")
 			scale.src = scale2SRC;
-		scaleLeft = left + width - scaleOffset; //X;
-		scaleTop = top + height - scaleOffset;
+		scaleLeft = left + width;
+		scaleTop = top + height;
 
 		ctx.drawImage(scale, scaleLeft, scaleTop, 25, 25);
 
+		if (!this.get('lockUniScaling')) {
+
+			// middle-top
+			this._drawControl('mt', ctx, methodName,
+				left + width / 2,
+				top, styleOverride);
+
+			// middle-bottom
+			this._drawControl('mb', ctx, methodName,
+				left + width / 2,
+				top + height, styleOverride);
+
+			// middle-right
+			this._drawControl('mr', ctx, methodName,
+				left + width,
+				top + height / 2, styleOverride);
+
+			// middle-left
+			this._drawControl('ml', ctx, methodName,
+				left,
+				top + height / 2, styleOverride);
+		}
+
+		// middle-top-rotate
+		if (hasRotatingPoint) {
+			this._drawControl('mtr', ctx, methodName,
+				left + width / 2,
+				top - this.rotatingPointOffset, styleOverride);
+		}
 		ctx.restore();
 
 		return this;
@@ -228,8 +266,6 @@ $(document).ready(function () {
 	var dirty = false;
 	var itemID = 0; //this will give each object, image/text a unique item for keeping track of the undo redo.
 	var movedItems = [];
-
-
 	var skipAfterZoom = false;
 
 	fabric.CzImage = fabric.util.createClass(fabric.Image,
