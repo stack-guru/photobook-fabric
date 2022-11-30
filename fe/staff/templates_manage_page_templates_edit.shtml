@@ -1,7 +1,7 @@
 <!--#include virtual="/fe/_blocks/header_client.html" -->
 
 <script src="/fe/assets/js/bignumber_2.1.4/bignumber.min.js"></script>
-<script src="/fe/assets/js/fabric/fabric.3.6.3.js"></script>
+<script src="/fe/assets/js/fabric/fabric.4.6.0.js"></script>
 <script src="/fe/assets/js/spectrum_1.7.1/spectrum.min.js"></script>
 <script src="/fe/assets/js/webfont_1.5.18/webfont.js"></script>
 <script src="/fe/assets/js/webfontloader_1.6.3/webfontloader.js"></script>

@@ -54,59 +54,59 @@ $(document).ready(function () {
 		this.setupState({ propertySet: '_dimensionAffectingProps' });
 	}
 
-	fabric.Canvas.prototype.getCornerCursor = function (corner, target) {
-		switch (corner) {
-			case 'bl':
-			case 'mtr':
-				this.setCursor(this.rotationCursor);
-				return;
-			case 'ml':
-			case 'mr':
-				this.setCursor('w-resize');
-				return;
-			case 'mt':
-			case 'mb':
-				this.setCursor('ns-resize');
-				return;
-			case 'tl':
-				this.setCursor('se-resize');
-				return;
-			case 'tr':
-				this.setCursor('nesw-resize');
-				return;
-			case 'br':
-				if (target.type == "Textbox")
-					this.setCursor('w-resize');
-				else
-					this.setCursor('se-resize');
-				return;
-			default:
-				this.setCursor(this.defaultCursor);
-				return false;
-		}
-	}
+	// fabric.Canvas.prototype.getCornerCursor = function (corner, target) {
+	// 	switch (corner) {
+	// 		case 'bl':
+	// 		case 'mtr':
+	// 			this.setCursor(this.rotationCursor);
+	// 			return;
+	// 		case 'ml':
+	// 		case 'mr':
+	// 			this.setCursor('w-resize');
+	// 			return;
+	// 		case 'mt':
+	// 		case 'mb':
+	// 			this.setCursor('ns-resize');
+	// 			return;
+	// 		case 'tl':
+	// 			this.setCursor('se-resize');
+	// 			return;
+	// 		case 'tr':
+	// 			this.setCursor('nesw-resize');
+	// 			return;
+	// 		case 'br':
+	// 			if (target.type == "Textbox")
+	// 				this.setCursor('w-resize');
+	// 			else
+	// 				this.setCursor('se-resize');
+	// 			return;
+	// 		default:
+	// 			this.setCursor(this.defaultCursor);
+	// 			return false;
+	// 	}
+	// }
 
-	fabric.Canvas.prototype._getActionFromCorner = function (alreadySelected, corner, e) {
-		if (!corner || !alreadySelected) {
-			return 'drag';
-		}
+	// fabric.Canvas.prototype._getActionFromCorner = function (alreadySelected, corner, e) {
+	// 	if (!corner || !alreadySelected) {
+	// 		return 'drag';
+	// 	}
 
-		const aObjects = this.getActiveObjects()
-		switch (corner) {
-			case 'ml':
-			case 'mr':
-				return 'scaleX';
-			case 'mt':
-			case 'mb':
-				return 'scaleY';
-			case 'bl':
-				return 'rotate';
-			case 'br':
-				if (aObjects.length === 1 && aObjects[0].type === 'Textbox') return 'scaleX'
-			default:
-				return 'scale';
-		}
-	}
+	// 	const aObjects = this.getActiveObjects()
+	// 	switch (corner) {
+	// 		case 'ml':
+	// 		case 'mr':
+	// 			return 'scaleX';
+	// 		case 'mt':
+	// 		case 'mb':
+	// 			return 'scaleY';
+	// 		case 'bl':
+	// 			return 'rotate';
+	// 		case 'br':
+	// 			if (aObjects.length === 1 && aObjects[0].type === 'Textbox') return 'scaleX'
+	// 		default:
+	// 			return 'scale';
+	// 	}
+	// }
 
 	// fabric.Object.prototype.drawBorders = function (ctx) {
 	// 	if (!this.hasBorders) {
@@ -165,98 +165,98 @@ $(document).ready(function () {
 	// }
 
 
-	fabric.Object.prototype.drawControls = function (ctx, styleOverride) {
-		if (!this.hasControls)
-			return this;
+	// fabric.Object.prototype.drawControls = function (ctx, styleOverride) {
+	// 	if (!this.hasControls)
+	// 		return this;
 
-		styleOverride = styleOverride || {};
-		var wh = this._calculateCurrentDimensions(),
-			width = wh.x,
-			height = wh.y,
-			scaleOffset = styleOverride.cornerSize || this.cornerSize,
-			left = -(width + scaleOffset) / 2,
-			top = -(height + scaleOffset) / 2,
-			transparentCorners = typeof styleOverride.transparentCorners !== 'undefined' ?
-				styleOverride.transparentCorners : this.transparentCorners,
-			hasRotatingPoint = typeof styleOverride.hasRotatingPoint !== 'undefined' ?
-				styleOverride.hasRotatingPoint : this.hasRotatingPoint,
-			methodName = transparentCorners ? 'stroke' : 'fill';
+	// 	styleOverride = styleOverride || {};
+	// 	var wh = this._calculateCurrentDimensions(),
+	// 		width = wh.x,
+	// 		height = wh.y,
+	// 		scaleOffset = styleOverride.cornerSize || this.cornerSize,
+	// 		left = -(width + scaleOffset) / 2,
+	// 		top = -(height + scaleOffset) / 2,
+	// 		transparentCorners = typeof styleOverride.transparentCorners !== 'undefined' ?
+	// 			styleOverride.transparentCorners : this.transparentCorners,
+	// 		hasRotatingPoint = typeof styleOverride.hasRotatingPoint !== 'undefined' ?
+	// 			styleOverride.hasRotatingPoint : this.hasRotatingPoint,
+	// 		methodName = transparentCorners ? 'stroke' : 'fill';
 
-		ctx.save();
-		ctx.strokeStyle = ctx.fillStyle = styleOverride.cornerColor || this.cornerColor;
-		if (!this.transparentCorners) {
-			ctx.strokeStyle = styleOverride.cornerStrokeColor || this.cornerStrokeColor;
-		}
-		this._setLineDash(ctx, styleOverride.cornerDashArray || this.cornerDashArray, null);
+	// 	ctx.save();
+	// 	ctx.strokeStyle = ctx.fillStyle = styleOverride.cornerColor || this.cornerColor;
+	// 	if (!this.transparentCorners) {
+	// 		ctx.strokeStyle = styleOverride.cornerStrokeColor || this.cornerStrokeColor;
+	// 	}
+	// 	this._setLineDash(ctx, styleOverride.cornerDashArray || this.cornerDashArray, null);
 
-		const iconSize = 25
+	// 	const iconSize = 25
 
-		// top-left
-		this._drawControl('tl', ctx, methodName,
-			left,
-			top, styleOverride);
+	// 	// top-left
+	// 	this._drawControl('tl', ctx, methodName,
+	// 		left,
+	// 		top, styleOverride);
 
-		// top-right
-		this._drawControl('tr', ctx, methodName,
-			left + width,
-			top, styleOverride);
+	// 	// top-right
+	// 	this._drawControl('tr', ctx, methodName,
+	// 		left + width,
+	// 		top, styleOverride);
 
-		//bottom-left
-		this._drawControl('bl', ctx, methodName,
-			left,
-			top + height, styleOverride);
+	// 	//bottom-left
+	// 	this._drawControl('bl', ctx, methodName,
+	// 		left,
+	// 		top + height, styleOverride);
 
-		var rotate = new Image();
-		rotate.src = rotateSRC;
-		ctx.drawImage(rotate, left, top + height, iconSize, iconSize);
+	// 	var rotate = new Image();
+	// 	rotate.src = rotateSRC;
+	// 	ctx.drawImage(rotate, left, top + height, iconSize, iconSize);
 
-		//bottom-right
-		this._drawControl('br', ctx, methodName,
-			left + width,
-			top + height, styleOverride);
+	// 	//bottom-right
+	// 	this._drawControl('br', ctx, methodName,
+	// 		left + width,
+	// 		top + height, styleOverride);
 
-		var scale = new Image();
-		if (this.type == "CzImage")
-			scale.src = scale1SRC;
-		else if (this.type == "Textbox")
-			scale.src = scale2SRC;
-		else
-			scale.src = scale1SRC;
-		ctx.drawImage(scale, left + width, top + height, iconSize, iconSize);
+	// 	var scale = new Image();
+	// 	if (this.type == "CzImage")
+	// 		scale.src = scale1SRC;
+	// 	else if (this.type == "Textbox")
+	// 		scale.src = scale2SRC;
+	// 	else
+	// 		scale.src = scale1SRC;
+	// 	ctx.drawImage(scale, left + width, top + height, iconSize, iconSize);
 
-		if (!this.get('lockUniScaling')) {
+	// 	if (!this.get('lockUniScaling')) {
 
-			// middle-top
-			this._drawControl('mt', ctx, methodName,
-				left + width / 2,
-				top, styleOverride);
+	// 		// middle-top
+	// 		this._drawControl('mt', ctx, methodName,
+	// 			left + width / 2,
+	// 			top, styleOverride);
 
-			// middle-bottom
-			this._drawControl('mb', ctx, methodName,
-				left + width / 2,
-				top + height, styleOverride);
+	// 		// middle-bottom
+	// 		this._drawControl('mb', ctx, methodName,
+	// 			left + width / 2,
+	// 			top + height, styleOverride);
 
-			// middle-right
-			this._drawControl('mr', ctx, methodName,
-				left + width,
-				top + height / 2, styleOverride);
+	// 		// middle-right
+	// 		this._drawControl('mr', ctx, methodName,
+	// 			left + width,
+	// 			top + height / 2, styleOverride);
 
-			// middle-left
-			this._drawControl('ml', ctx, methodName,
-				left,
-				top + height / 2, styleOverride);
-		}
+	// 		// middle-left
+	// 		this._drawControl('ml', ctx, methodName,
+	// 			left,
+	// 			top + height / 2, styleOverride);
+	// 	}
 
-		// middle-top-rotate
-		if (hasRotatingPoint) {
-			this._drawControl('mtr', ctx, methodName,
-				left + width / 2,
-				top - this.rotatingPointOffset, styleOverride);
-		}
-		ctx.restore();
+	// 	// middle-top-rotate
+	// 	if (hasRotatingPoint) {
+	// 		this._drawControl('mtr', ctx, methodName,
+	// 			left + width / 2,
+	// 			top - this.rotatingPointOffset, styleOverride);
+	// 	}
+	// 	ctx.restore();
 
-		return this;
-	};
+	// 	return this;
+	// };
 
 	var dirty = false;
 	var itemID = 0; //this will give each object, image/text a unique item for keeping track of the undo redo.
@@ -293,7 +293,6 @@ $(document).ready(function () {
 				if (x || y)
 					this.zoomedXY = true;
 
-				// console.log('cx, cy before zoom --------', this.cx, this.cy);
 				this.cx += x;
 				this.cy += y;
 
@@ -370,7 +369,6 @@ $(document).ready(function () {
 					}
 				}
 
-				console.log('cx, cy after zoom --------', this.cx, this.cy);
 				this.cropX = 0
 				this.cropY = 0
 
@@ -510,7 +508,6 @@ $(document).ready(function () {
 			},
 
 			rerender: function (round_border, callback) {
-				console.log('cz image rerender')
 				dirty = true
 				var img1 = new Image(), obj = this;
 				img1.crossOrigin = '';
@@ -520,7 +517,6 @@ $(document).ready(function () {
 				img1.objWidth = obj.getScaledWidth();
 				img1.objHeight = obj.getScaledHeight();
 
-				// console.log(obj.left, obj.top, obj.cx, obj.cy, obj.cw, obj.ch, obj.width, obj.height)
 				img1.onload = function () {
 					var _canvas = fabric.util.createCanvasElement(), img2 = new Image();
 					_canvas.width = obj.width;
@@ -701,7 +697,6 @@ $(document).ready(function () {
 							canvas.requestRenderAll();
 							canvas.setActiveObject(obj);
 							obj.saveState();
-
 						}
 
 					}
@@ -1050,12 +1045,8 @@ $(document).ready(function () {
 	var otype;
 	var change = false;
 
-	canvas.on('object:selected', function (e) {
-		if (!e.target || !e.target.type)
-			$(".all_menus").remove();
-
-		var id = canvas.getObjects().indexOf(e.target);
-		var obj = e.target;
+	function objectSelected (obj) {
+		var id = canvas.getObjects().indexOf(obj);
 		var add = false;
 		otype = obj.get('type');
 		var replaced = obj.get('replaced'); //need this when replacing an image because it keeps the highest index and jacks menu up.
@@ -1067,10 +1058,6 @@ $(document).ready(function () {
 		}
 
 		if (otype == 'CzImage') {
-
-			//Crop.initialize(canvas,obj);
-
-			//var stateProperties = ['my']; 
 
 			if ($(".image_menus").length == 0 || cur_id != id || replaced || redo_undo_action) {
 				if (cur_id && cur_id != id)
@@ -1558,11 +1545,20 @@ $(document).ready(function () {
 			}, 50);
 
 		}
-
-
 		cur_id = id;
+	}
 
-		//canvas.renderAll();
+	const selectionUpdated = obj => {
+		obj.selected.length === 1 && objectSelected(obj.selected[0])
+	}
+
+	const selectionCreated = obj => {
+		obj.selected.length === 1 && objectSelected(obj.selected[0])
+	}
+
+	canvas.on({
+		'selection:updated': selectionUpdated,
+		'selection:created': selectionCreated
 	});
 
 	loadMenuValues = function (obj) {
@@ -1690,7 +1686,6 @@ $(document).ready(function () {
 		}
 
 	}
-
 
 	canvas.on('object:scaling', function (e) {
 		var obj = canvas.getActiveObject();
@@ -1839,6 +1834,8 @@ $(document).ready(function () {
 	}
 
 	canvas.on('mouse:up', function (e) {
+		$(".all_menus").show()
+
 		if (!cropping && (e.target && e.target.type))
 			adjust_menu(e.target);
 
@@ -2070,7 +2067,7 @@ $(document).ready(function () {
 		var obj = canvas.getActiveObject();
 		var id = canvas.getObjects().indexOf(obj) + 1;
 		var _obj = canvas._objects[id];
-		if (_obj.bottom == true)
+		if (_obj.bottom && _obj.bottom == true)
 			return false;
 
 		canvas.getActiveObject().bringForward();
@@ -2079,8 +2076,6 @@ $(document).ready(function () {
 		saveState();
 		sendObjectFront = false;
 	});
-
-
 
 	var last_id;
 	$('#canvas_div').on('click', ".crop_mode", function (e) {
@@ -4787,11 +4782,8 @@ $(document).ready(function () {
 	var lastObj, clipPathObj = [], indexState = [], objectAddDelete = [];
 
 	function saveState() {
-
 		var obj = canvas.getActiveObject();
 		if (obj) {
-
-
 			if (index == 0 && list.length == 0) //save start state and current state
 			{
 				list = [];
@@ -5063,6 +5055,9 @@ $(document).ready(function () {
 			setOptions = false;
 			//dropIndex = true;
 		}
+
+		console.log(state);
+		return
 
 		if (setOptions) {
 			if (dropIndex) {
