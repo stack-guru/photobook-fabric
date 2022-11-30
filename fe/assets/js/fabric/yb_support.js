@@ -108,61 +108,61 @@ $(document).ready(function () {
 		}
 	}
 
-	fabric.Object.prototype.drawBorders = function (ctx) {
-		if (!this.hasBorders) {
-			return this;
-		}
+	// fabric.Object.prototype.drawBorders = function (ctx) {
+	// 	if (!this.hasBorders) {
+	// 		return this;
+	// 	}
 
-		ctx.save();
+	// 	console.log('----------draw Borders')
 
-		ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;
-		ctx.strokeStyle = this.borderColor;
-		ctx.lineWidth = 1 / this.borderScaleFactor;
+	// 	ctx.save();
 
-		var wh = this._calculateCurrentDimensions(true),
-			width = wh.x,
-			height = wh.y;
-		if (this.group) {
-			width = width * this.group.scaleX;
-			height = height * this.group.scaleY;
-		}
+	// 	ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;
+	// 	ctx.strokeStyle = this.borderColor;
+	// 	ctx.lineWidth = 1 / this.borderScaleFactor;
 
-		var x = ~~(-(width / 2)) - 0.5;
-		var y = ~~(-(height / 2)) - 0.5;
-		var w = ~~(width) + 1;
-		var h = ~~(height) + 1;
+	// 	var wh = this._calculateCurrentDimensions(true),
+	// 		width = wh.x,
+	// 		height = wh.y;
+	// 	if (this.group) {
+	// 		width = width * this.group.scaleX;
+	// 		height = height * this.group.scaleY;
+	// 	}
 
-		/*var x = (width / 2) - 0.5;
-		var y = (height / 2) - 0.5;
-		var w = ~~(width) + 1;
-		var h = ~~(height) + 1;*/
+	// 	var x = ~~(-(width / 2)) - 0.5;
+	// 	var y = ~~(-(height / 2)) - 0.5;
+	// 	var w = ~~(width) + 1;
+	// 	var h = ~~(height) + 1;
 
-		if (this.borderDashArray) {
-			ctx.beginPath();
-			fabric.util.drawDashedLine(ctx, x, y, x + w, y, this.borderDashArray);
-			fabric.util.drawDashedLine(ctx, x + w, y, x + w, y + h, this.borderDashArray);
-			fabric.util.drawDashedLine(ctx, x + w, y + h, x, y + h, this.borderDashArray);
-			fabric.util.drawDashedLine(ctx, x, y + h, x, y, this.borderDashArray);
-			ctx.stroke();
-			ctx.closePath();
-		}
+	// 	/*var x = (width / 2) - 0.5;
+	// 	var y = (height / 2) - 0.5;
+	// 	var w = ~~(width) + 1;
+	// 	var h = ~~(height) + 1;*/
 
+	// 	if (this.borderDashArray) {
+	// 		ctx.beginPath();
+	// 		fabric.util.drawDashedLine(ctx, x, y, x + w, y, this.borderDashArray);
+	// 		fabric.util.drawDashedLine(ctx, x + w, y, x + w, y + h, this.borderDashArray);
+	// 		fabric.util.drawDashedLine(ctx, x + w, y + h, x, y + h, this.borderDashArray);
+	// 		fabric.util.drawDashedLine(ctx, x, y + h, x, y, this.borderDashArray);
+	// 		ctx.stroke();
+	// 		ctx.closePath();
+	// 	}
 
+	// 	if (this.hasRotatingPoint && this.isControlVisible('mtr') && !this.get('lockRotation') && this.hasControls) {
 
-		if (this.hasRotatingPoint && this.isControlVisible('mtr') && !this.get('lockRotation') && this.hasControls) {
+	// 		var rotateHeight = -height / 2;
 
-			var rotateHeight = -height / 2;
+	// 		ctx.beginPath();
+	// 		ctx.moveTo(0, rotateHeight);
+	// 		ctx.lineTo(0, rotateHeight - this.rotatingPointOffset);
+	// 		ctx.closePath();
+	// 		ctx.stroke();
+	// 	}
 
-			ctx.beginPath();
-			ctx.moveTo(0, rotateHeight);
-			ctx.lineTo(0, rotateHeight - this.rotatingPointOffset);
-			ctx.closePath();
-			ctx.stroke();
-		}
-
-		ctx.restore();
-		return this;
-	}
+	// 	ctx.restore();
+	// 	return this;
+	// }
 
 
 	fabric.Object.prototype.drawControls = function (ctx, styleOverride) {
