@@ -97,7 +97,7 @@ $(document).ready(function () {
 					? 'scaleY'
 					: corner === 'bl'
 						? 'rotate'
-						: aObjects[0].type === "Textbox" ? 
+						: aObjects[0].type === "Textbox" ?
 							'scaleX'
 							: 'scale';
 		}
@@ -479,6 +479,7 @@ $(document).ready(function () {
 			},
 
 			rerender: function (round_border, callback) {
+				console.log('cz image rerender')
 				dirty = true
 				var img1 = new Image(), obj = this;
 				img1.crossOrigin = '';
@@ -738,8 +739,8 @@ $(document).ready(function () {
 			zc.canvas = canvas;
 
 			var img = new Image();
-			img.onload = function () {
 
+			img.onload = function () {
 				var fImg = new fabric.CzImage(this, {
 					originX: 'left',
 					originY: 'top',
@@ -756,6 +757,7 @@ $(document).ready(function () {
 					opacity: opts.hasOwnProperty("opacity") ? opts.opacity == 0 ? 0 : 1 : 1,
 					filters: [new fabric.Image.filters.Brightness({ brightness: 0.01 })]
 				});
+
 				if (opts.width) {
 					fImg.width = opts.width;
 				}
@@ -841,16 +843,13 @@ $(document).ready(function () {
 				}
 				else //if border don't activate it.
 				{
-
+					zc.canvas.discardActiveObject();
 					zc.canvas.setActiveObject(fImg);
 					fImg.saveState();
 				}
 				updateGreenMark("add", fImg);
-
-
 			};
 			img.src = src;
-
 			//this.initKeyboard();
 		},
 	};
@@ -933,7 +932,7 @@ $(document).ready(function () {
 			if (plc_obj.my.frame_style == "round") {
 				obj.clipPath = new fabric.Circle({
 					top: obj.my.y,
-					left: obj.my.x,	
+					left: obj.my.x,
 					radius: obj.my.circle_radius,
 					startAngle: 0,
 					angle: Math.PI * 2,
@@ -950,10 +949,10 @@ $(document).ready(function () {
 					originX: 'center',
 					originY: 'center'
 				})
-			} else if (plc_obj.my.frame_style == "square") {			
+			} else if (plc_obj.my.frame_style == "square") {
 				obj.clipPath = new fabric.Rect({
-					left: -plc_obj.my.oval_rx/2,
-					top: -plc_obj.my.oval_ry/2,
+					left: -plc_obj.my.oval_rx / 2,
+					top: -plc_obj.my.oval_ry / 2,
 					width: plc_obj.my.oval_rx,
 					height: plc_obj.my.oval_ry,
 					rx: obj.my.corner_radius,
@@ -1638,7 +1637,7 @@ $(document).ready(function () {
 			var x = findFilter(obj, 'Brightness');
 			if (x != null)
 				b = obj.filters[x].brightness * 100;
-				// b = Math.round(obj.filters[x].brightness / 2.55);
+			// b = Math.round(obj.filters[x].brightness / 2.55);
 
 			$("#brightness_image_value").val(b);
 			updateBrightConValues("brightness", b);
@@ -1928,7 +1927,7 @@ $(document).ready(function () {
 		if (e > 1) val = 1
 		else if (e < -1) val = -1
 		else val = e
-		
+
 		return val
 	}
 
@@ -1958,7 +1957,7 @@ $(document).ready(function () {
 		canvas.forEachObject(function (obj) {
 			if (obj.type === 'CzImage' && obj.graphic != 'border' && !obj.panel) {
 				//if we have a bunch of data to use to apply border then....	
-				if ((('clipPath' in obj) || ('clipTo' in obj)) && (obj.clipPath || obj.clipTo) && ('my' in obj) 
+				if ((('clipPath' in obj) || ('clipTo' in obj)) && (obj.clipPath || obj.clipTo) && ('my' in obj)
 					&& obj.my.hasBorder == 'ON' && ('frame_round_border' in obj) && obj.frame_round_border && ('hasBorder' in obj.my))
 					zc.frame_round_border(obj.frame_round_border, obj);
 				else if (('cropX' in obj || 'cropY' in obj) || (obj.cx != 0 || obj.cy != 0 || obj.cw != obj.width || obj.ch != obj.height))
@@ -3078,7 +3077,7 @@ $(document).ready(function () {
 					obj.clipPath = null
 					obj.clipPath = new fabric.Circle({
 						top: y,
-						left: x,	
+						left: x,
 						radius: radius,
 						startAngle: 0,
 						angle: Math.PI * 2,
@@ -3118,8 +3117,8 @@ $(document).ready(function () {
 
 					obj.clipPath = null
 					obj.clipPath = new fabric.Rect({
-						left: -obj.width/2,
-						top: -obj.height/2,
+						left: -obj.width / 2,
+						top: -obj.height / 2,
 						width: obj.width,
 						height: obj.height,
 						rx: obj.my.corner_radius,
@@ -3215,7 +3214,7 @@ $(document).ready(function () {
 			else
 				render = true;
 		}
-		
+
 		render ? renderAfter(obj) : canvas.renderAll()
 	}
 
@@ -4163,6 +4162,7 @@ $(document).ready(function () {
 		//delay to let screen update
 		littleDelay('saveData', 300, []);
 
+		document.body.style.cursor = 'wait';
 	});
 
 
@@ -4301,6 +4301,7 @@ $(document).ready(function () {
 
 				//enable the save button.
 				$("#save").removeAttr("disabled");
+				document.body.style.cursor = 'default';
 
 				if (is_com_user_page()) {
 					if (goUpload) {
@@ -4368,7 +4369,7 @@ $(document).ready(function () {
 		}
 
 	}
-	
+
 	function showTextBoxes() {
 		canvas.forEachObject(function (obj) {
 			if (obj.type == "Textbox") {
@@ -4465,18 +4466,18 @@ $(document).ready(function () {
 							obj.my.stroke = 'rgb(0, 0, 0)';
 							obj.stroke = 'rgb(0, 0, 0)';
 						}
-						
+
 						if (obj.filters && obj.filters.length > 0) {
 							obj.tempFilters = obj.filters
 							obj.filters = []
-						} 
+						}
 
 						if (obj.clipPath) {
 							obj.clipPath = null
 							if (obj.my.frame_style == "round") {
 								obj.clipPath = new fabric.Circle({
 									top: obj.my.y,
-									left: obj.my.x,	
+									left: obj.my.x,
 									radius: obj.my.circle_radius,
 									startAngle: 0,
 									angle: Math.PI * 2,
@@ -4493,10 +4494,10 @@ $(document).ready(function () {
 									originX: 'center',
 									originY: 'center'
 								})
-							} else if (obj.my.frame_style == "square") {			
+							} else if (obj.my.frame_style == "square") {
 								obj.clipPath = new fabric.Rect({
-									left: -obj.width/2,
-									top: -obj.height/2,
+									left: -obj.width / 2,
+									top: -obj.height / 2,
 									width: obj.width,
 									height: obj.height,
 									rx: obj.my.corner_radius,
@@ -4506,7 +4507,7 @@ $(document).ready(function () {
 						}
 
 					});
-				
+
 					canvas.loadFromJSON(t, function () {
 						applyImageBorders();
 						setTimeout(function () {
@@ -6233,7 +6234,6 @@ $(document).ready(function () {
 		zc.init(src, opts);
 		dirty = true;
 		saveState();
-
 	});
 
 });
