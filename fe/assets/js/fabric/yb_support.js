@@ -1,58 +1,29 @@
 //home page add interaction code
 $(document).ready(function () {
 
-	fabric.Image.filters.Contrast.fromObject = function (object) {
-		return new fabric.Image.filters.Contrast(object);
-	};
-
-	//THIS WAS CAUSING IMAGES NOT TO LOAD IN CHROME!!!
-	fabric.util.loadImage = function (url, callback, context, crossOrigin) {
-		if (!url) {
-			callback && callback.call(context, url);
-			return;
-		}
-
-		var img = fabric.util.createImage();
-
-		/** @ignore */
-		img.onload = function () {
-			callback && callback.call(context, img);
-			img = img.onload = img.onerror = null;
-		};
-
-		/** @ignore */
-		img.onerror = function () {
-			fabric.log('Error loading ' + img.src);
-			callback && callback.call(context, null, true);
-			img = img.onload = img.onerror = null;
-		};
-
-		img.src = url;
-	}
-
 	//change prototype
 
-	fabric.Textbox.prototype.initialize = function (text, options) {
+	// fabric.Textbox.prototype.initialize = function (text, options) {
 
-		if (!text) {
-			text = "Text Here!"
-		}
-		this.ctx = fabric.util.createCanvasElement().getContext('2d');
+	// 	if (!text) {
+	// 		text = "Text Here!"
+	// 	}
+	// 	this.ctx = fabric.util.createCanvasElement().getContext('2d');
 
-		this.callSuper('initialize', text, options);
+	// 	this.callSuper('initialize', text, options);
 
-		this.set({
-			lockUniScaling: false,
-			lockScalingY: true,
-			lockScalingFlip: true,
-			hasBorders: true
-		});
-		//this.setControlsVisibility(fabric.Textbox.getTextboxControlVisibility());
+	// 	this.set({
+	// 		lockUniScaling: false,
+	// 		lockScalingY: true,
+	// 		lockScalingFlip: true,
+	// 		hasBorders: true
+	// 	});
+	// 	//this.setControlsVisibility(fabric.Textbox.getTextboxControlVisibility());
 
-		// add width to this list of props that effect line wrapping.
-		// this._dimensionAffectingProps.width = true;
-		this.setupState({ propertySet: '_dimensionAffectingProps' });
-	}
+	// 	// add width to this list of props that effect line wrapping.
+	// 	// this._dimensionAffectingProps.width = true;
+	// 	this.setupState({ propertySet: '_dimensionAffectingProps' });
+	// }
 
 	// fabric.Canvas.prototype.getCornerCursor = function (corner, target) {
 	// 	switch (corner) {
@@ -508,7 +479,6 @@ $(document).ready(function () {
 			},
 
 			rerender: function (round_border, callback) {
-				dirty = true
 				var img1 = new Image(), obj = this;
 				img1.crossOrigin = '';
 
@@ -1045,7 +1015,7 @@ $(document).ready(function () {
 	var otype;
 	var change = false;
 
-	function objectSelected (obj) {
+	function objectSelected(obj) {
 		var id = canvas.getObjects().indexOf(obj);
 		var add = false;
 		otype = obj.get('type');
@@ -1548,17 +1518,13 @@ $(document).ready(function () {
 		cur_id = id;
 	}
 
-	const selectionUpdated = obj => {
-		obj.selected.length === 1 && objectSelected(obj.selected[0])
-	}
-
-	const selectionCreated = obj => {
+	const selectionOccured = obj => {
 		obj.selected.length === 1 && objectSelected(obj.selected[0])
 	}
 
 	canvas.on({
-		'selection:updated': selectionUpdated,
-		'selection:created': selectionCreated
+		'selection:updated': selectionOccured,
+		'selection:created': selectionOccured
 	});
 
 	loadMenuValues = function (obj) {
@@ -1678,7 +1644,6 @@ $(document).ready(function () {
 			$("#contrast_image_value").val(b);
 			updateBrightConValues("contrast", b);
 
-
 			//opacity	
 			$("#opacity_image_value").val(obj.opacity / .01);
 			$("#opacity_image_value_text").html("Opacity:&nbsp;&nbsp;" + (obj.opacity / .01));
@@ -1713,7 +1678,6 @@ $(document).ready(function () {
 	});
 
 	canvas.on('object:rotating', function (e) {
-		var obj = canvas.getActiveObject();
 		$(".all_menus").hide();
 	});
 
@@ -1753,7 +1717,7 @@ $(document).ready(function () {
 			$("#top_image_menu").css(
 				{
 					position: "absolute",
-					top: (top - menu_height - top_image_menu_offset) + "px",
+					top: (top - menu_height - top_image_menu_offset - 30) + "px",
 					left: top_image_menu_left + "px"
 				});
 
@@ -1861,7 +1825,6 @@ $(document).ready(function () {
 		}
 
 	});
-
 
 	var was_x, was_y;
 	var crop_move_timer;
@@ -2021,13 +1984,11 @@ $(document).ready(function () {
 		});
 	}
 
-
 	$("#add_text").click(function (e) {
 		addText();
 		dirty = true;
 		saveState();
 	});
-
 
 	var theRemovedObject;
 
@@ -2067,7 +2028,7 @@ $(document).ready(function () {
 		var obj = canvas.getActiveObject();
 		var id = canvas.getObjects().indexOf(obj) + 1;
 		var _obj = canvas._objects[id];
-		if (_obj.bottom && _obj.bottom == true)
+		if (_obj && _obj.bottom && _obj.bottom == true)
 			return false;
 
 		canvas.getActiveObject().bringForward();
@@ -3132,7 +3093,7 @@ $(document).ready(function () {
 					obj.my.oval_ry = _ry;
 					obj.opacity = 1;
 
-					obj.hasBorders = false;
+					// obj.hasBorders = false;
 					obj.my.strokeWidth = Number($('#border_image_size').val());
 					obj.my.stroke = $("#border_image_colorpicker").spectrum("get").toRgbString();
 					obj.my.corner_radius = Number($('#border_image_radius').val());
@@ -4201,15 +4162,10 @@ $(document).ready(function () {
 	}
 
 	saveData = function () {
-		// canvas.dispose();
-		// canvas.clear();
-		// canvas.renderAll();
-		// return false;
 		$(".all_menus").remove();
 		canvas.discardActiveObject();
 
 		removeBleed();
-		//if (grid_showing)
 		removeGrid();
 
 		canvas.globalScale = globalScale;
@@ -4356,10 +4312,6 @@ $(document).ready(function () {
 
 	}
 
-	/*function roundNumber(rnum, rlength) { 
-		var newnumber = Math.round(rnum * Math.pow(10, rlength)) / Math.pow(10, rlength);
-		return newnumber;
-	}*/
 	var webfontsloaded = false;
 	function loadFonts() {
 
@@ -4478,16 +4430,20 @@ $(document).ready(function () {
 							v.src = new URL(v.src).pathname;
 						}
 					});
+
 					//make sure the lockscale are false.
 					$.each(t.objects, function (k, obj) {
 						if (obj.type == "Textbox") obj.visible = false
 
 						if (obj._controlsVisibility)
 							obj._controlsVisibility.br = obj._controlsVisibility.bl = true;
+
 						obj.lockMovementX = obj.lockMovementY = obj.lockScalingX = obj.lockScalingY = obj.lockRotation = false;
+
 						if (!obj.my) {
 							obj.stroke = 'rgb(0, 0, 0)';
 						}
+
 						if (obj.my && obj.my.stroke == "") {
 							obj.my.stroke = 'rgb(0, 0, 0)';
 							obj.stroke = 'rgb(0, 0, 0)';
@@ -4498,7 +4454,7 @@ $(document).ready(function () {
 							obj.filters = []
 						}
 
-						if (obj.clipPath) {
+						if (obj.my && obj.my.frame_style) {
 							obj.clipPath = null
 							if (obj.my.frame_style == "round") {
 								obj.clipPath = new fabric.Circle({
@@ -4771,7 +4727,6 @@ $(document).ready(function () {
 
 
 	windowResize();	//this just gets the scale.
-	//loadCanvas();	
 
 	//undo-redo	
 	var current;
@@ -4796,7 +4751,7 @@ $(document).ready(function () {
 
 				//if not dragging	
 				if (!draggedAdded) {
-					state[index] = JSON.stringify(obj.originalState);
+					state[index] = JSON.stringify(obj._stateProperties);
 					list[index] = obj;
 					clipPathObj[index] = obj.clipPath;
 					updateSendObject(index, obj);
@@ -4810,7 +4765,7 @@ $(document).ready(function () {
 				obj.saveState();
 
 				//save first state
-				state[index] = JSON.stringify(obj.originalState);
+				state[index] = JSON.stringify(obj._stateProperties);
 				list[index] = obj;
 				clipPathObj[index] = obj.clipPath;
 				updateSendObject(index, obj);
@@ -4857,7 +4812,7 @@ $(document).ready(function () {
 
 					index++;
 					//save first state
-					state[index] = JSON.stringify(obj.originalState);
+					state[index] = JSON.stringify(obj._stateProperties);
 					list[index] = obj;
 					clipPathObj[index] = obj.clipPath;
 					updateSendObject(index, obj);
@@ -4868,7 +4823,7 @@ $(document).ready(function () {
 					obj.saveState();
 
 					//don't incremement this time.
-					state[index] = JSON.stringify(obj.originalState);
+					state[index] = JSON.stringify(obj._stateProperties);
 					list[index] = obj;
 					clipPathObj[index] = obj.clipPath;
 					updateAddDeleteObject(index, obj);
@@ -4883,7 +4838,7 @@ $(document).ready(function () {
 						//save first state
 						index++;
 
-						state[index] = JSON.stringify(obj.originalState);
+						state[index] = JSON.stringify(obj._stateProperties);
 						list[index] = obj;
 						clipPathObj[index] = obj.clipPath;
 						updateAddDeleteObject(index, obj);
@@ -4895,7 +4850,7 @@ $(document).ready(function () {
 					index++;
 
 					//save the previous state
-					state[index] = JSON.stringify(obj.originalState);
+					state[index] = JSON.stringify(obj._stateProperties);
 					list[index] = obj;
 					clipPathObj[index] = obj.clipPath;
 					updateAddDeleteObject(index, obj);
@@ -4912,7 +4867,7 @@ $(document).ready(function () {
 			_obj.saveState();
 			index++;
 
-			state[index] = JSON.stringify(_obj.originalState);
+			state[index] = JSON.stringify(_obj._stateProperties);
 			list[index] = _obj;
 			clipPathObj[index] = _obj.clipPath;
 			updateSendObject(index, _obj);
@@ -4948,74 +4903,6 @@ $(document).ready(function () {
 
 		addedObject = removedObject = clonedObject = croppedObject = false;
 	}
-
-	function findCanvasObject(val, property, val2, property2) //find if an object exists on canvas via property
-	{
-		var objs = canvas.getObjects();
-		var pass = false;
-
-		if (val2) {
-			$(objs).each(function (i, v) {
-				if (v[property] == val && v[property2] == val2) {
-					pass = true;
-					return false;
-				}
-			});
-		}
-		else {
-			$(objs).each(function (i, v) {
-				if (v[property] == val) {
-					pass = true;
-					return false;
-				}
-			});
-		}
-
-
-		return pass;
-	}
-
-	function updateGreenMark(action, obj) {
-		var id = obj.imageID,
-			t = "im",
-			bottom = 0;
-
-		if ($.inArray(obj.graphic, ['border', 'background', 'clipart']) != -1)
-			t = "gr";
-		else if (obj.group_photo) {
-			bottom = 18;
-			t = "grp";
-		}
-
-		var used = '';
-		if (obj.graphic == "background")
-			used = 'class="bg_used"';
-		else if (obj.graphic == "border")
-			used = 'class="brdr_used"';
-
-		if (action == "add") {
-			//update green check on image.
-			var h = '<div title="Image Used" id="used_' + t + "_" + id + '" ' + used + ' style="position:absolute;bottom:' + bottom + 'px;right:0px;"><img style="height:30px; width:30px;" class="check_mark" src="' + img_path + 'green_check_circle.png"></div>';
-			$("#" + t + "_" + id).after(h);
-		}
-		else //remove
-		{
-			//make sure this id is not still on the page.
-			if (!findCanvasObject(id, "imageID"))
-				$("#used_" + t + "_" + id).remove();
-			else {
-				if (obj.group_photo)
-					if (!findCanvasObject(id, "imageID", "group_photo", "group")) //make sure if found group also
-						$("#used_" + t + "_" + id).remove();
-					else if (t == "gr")
-						//found clipart or border
-						if (!findCanvasObject(id, "imageID", "graphic", "clipart") && !findCanvasObject(id, "imageID", "graphic", "border"))
-							$("#used_" + t + "_" + id).remove();
-			}
-		}
-	}
-
-
 
 	function undo() {
 
@@ -5055,9 +4942,6 @@ $(document).ready(function () {
 			setOptions = false;
 			//dropIndex = true;
 		}
-
-		console.log(state);
-		return
 
 		if (setOptions) {
 			if (dropIndex) {
@@ -5168,15 +5052,15 @@ $(document).ready(function () {
 		//only for images.. text has no filters.
 
 		//if any filters, extract them them push them backin so we get applyto etc added in.
-		if (obj.filters.length > 0) {
+		if (obj.filters && obj.filters.length > 0) {
 			var _filters = [];
 			$.each(obj.filters, function (k, v) {
-				if (v && v.type.toLowerCase() == "brightness")
+				if (v && v.brightness)
 					_filters.push(new fabric.Image.filters.Brightness({ brightness: v.brightness }));
-				else if (v && v.type.toLowerCase() == "contrast")
+				else if (v && v.contrast)
 					_filters.push(new fabric.Image.filters.Contrast({ contrast: v.contrast }));
-				else if (v && v.type.toLowerCase() == "grayscale")
-					_filters.push(new fabric.Image.filters.Grayscale({ grayscale: v.grayscale }));
+				else if (v && v.grayscale)
+					_filters.push(new fabric.Image.filters.Grayscale());
 			});
 
 			obj.filters = []; //clear array;
@@ -5201,24 +5085,82 @@ $(document).ready(function () {
 		}, 50);
 	}
 
-	/*applyImageBorders();
-	setTimeout(function()
-	{ 							
-		applyImageFilters();
-		redo_undo_action = false;	
-	}, 50);*/
+	function findCanvasObject(val, property, val2, property2) //find if an object exists on canvas via property
+	{
+		var objs = canvas.getObjects();
+		var pass = false;
 
+		if (val2) {
+			$(objs).each(function (i, v) {
+				if (v[property] == val && v[property2] == val2) {
+					pass = true;
+					return false;
+				}
+			});
+		}
+		else {
+			$(objs).each(function (i, v) {
+				if (v[property] == val) {
+					pass = true;
+					return false;
+				}
+			});
+		}
+
+
+		return pass;
+	}
+
+	function updateGreenMark(action, obj) {
+		var id = obj.imageID,
+			t = "im",
+			bottom = 0;
+
+		if ($.inArray(obj.graphic, ['border', 'background', 'clipart']) != -1)
+			t = "gr";
+		else if (obj.group_photo) {
+			bottom = 18;
+			t = "grp";
+		}
+
+		var used = '';
+		if (obj.graphic == "background")
+			used = 'class="bg_used"';
+		else if (obj.graphic == "border")
+			used = 'class="brdr_used"';
+
+		if (action == "add") {
+			//update green check on image.
+			var h = '<div title="Image Used" id="used_' + t + "_" + id + '" ' + used + ' style="position:absolute;bottom:' + bottom + 'px;right:0px;"><img style="height:30px; width:30px;" class="check_mark" src="' + img_path + 'green_check_circle.png"></div>';
+			$("#" + t + "_" + id).after(h);
+		}
+		else //remove
+		{
+			//make sure this id is not still on the page.
+			if (!findCanvasObject(id, "imageID"))
+				$("#used_" + t + "_" + id).remove();
+			else {
+				if (obj.group_photo)
+					if (!findCanvasObject(id, "imageID", "group_photo", "group")) //make sure if found group also
+						$("#used_" + t + "_" + id).remove();
+					else if (t == "gr")
+						//found clipart or border
+						if (!findCanvasObject(id, "imageID", "graphic", "clipart") && !findCanvasObject(id, "imageID", "graphic", "border"))
+							$("#used_" + t + "_" + id).remove();
+			}
+		}
+	}
 
 	$('.undo').click(function () {
 		undo();
 	});
+
 	$('.redo').click(function () {
 		redo();
 		canvas.renderAll();
 	});
 
 	//end redo
-
 	$("#upload_photos").click(
 		function (e) {
 			//close the add photos;
