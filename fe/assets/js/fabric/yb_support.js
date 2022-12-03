@@ -1785,9 +1785,11 @@ $(document).ready(function () {
 		actionName: 'rotate',
 		render: (ctx, left, top) => {
 			var rotate = new Image();
-			rotate.src = rotateSRC;
 			ctx.save();
-			ctx.drawImage(rotate, left - 13, top - 13, 25, 25);
+			rotate.onload = function(){
+				ctx.drawImage(rotate, left - 13, top - 13, 25, 25);
+			};
+			rotate.src = rotateSRC;
 			ctx.restore();
 		}
 	});
@@ -1797,11 +1799,13 @@ $(document).ready(function () {
 		actionHandler: fabric.controlsUtils.changeWidth,
 		cursorStyleHandler: () => 'w-resize',
 		actionName: 'resizing',
-		render: (ctx, left, top) => {
-			var rotate = new Image();
-			rotate.src = scale2SRC;
+		render: (ctx, left, top, style, obj) => {
+			var scale = new Image();
 			ctx.save();
-			ctx.drawImage(rotate, left - 13, top - 13, 25, 25);
+			scale.onload = function(){
+				ctx.drawImage(scale, left - 13, top - 13, 25, 25);
+			};
+			scale.src = scale2SRC;
 			ctx.restore();
 		}
 	});
@@ -1811,10 +1815,12 @@ $(document).ready(function () {
 		actionHandler: fabric.controlsUtils.scalingEqually,
 		cursorStyleHandler: () => 'se-resize',
 		render: (ctx, left, top) => {
-			var rotate = new Image();
-			rotate.src = scale1SRC;
+			var scale = new Image();
 			ctx.save();
-			ctx.drawImage(rotate, left - 13, top - 13, 25, 25);
+			scale.onload = function(){
+				ctx.drawImage(scale, left - 13, top - 13, 25, 25);
+			};
+			scale.src = scale1SRC;
 			ctx.restore();
 		}
 	});
