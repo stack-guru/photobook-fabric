@@ -493,7 +493,12 @@ $(document).ready(function () {
 					_canvas.height = obj.height;
 
 					var ctx = _canvas.getContext('2d');
-					ctx.drawImage(this, obj.cx, obj.cy, obj.cw, obj.ch, 0, 0, obj.width, obj.height);
+					ctx.imageSmoothingEnabled = true;
+
+					const oWidth = Math.floor(obj.width)
+					const oHeight = Math.floor(obj.height)
+
+					ctx.drawImage(this, obj.cx, obj.cy, obj.cw, obj.ch, 0, 0, oWidth, oHeight);
 					//if need to make the round border
 					if (this.round_border && obj.frame_round_border) {
 						//scalex = obj.getScaleX();
@@ -501,43 +506,42 @@ $(document).ready(function () {
 
 						var d = obj.frame_round_border;
 						ctx.setLineDash(d.strokeDashArray);
-						ctx.fillStyle = 'transparent';
-						//ctx.fill();
-						ctx.lineWidth = d.strokeWidth;
+						// ctx.fillStyle = 'transparent';
+						ctx.lineWidth = d.strokeWidth + 3;
 						ctx.strokeStyle = d.stroke;
-						if (this.round_border == 'round') {
 
+						if (this.round_border === 'round') {
 							//scale this radius to max of object width.
-							if (d.ow > d.oh)
-								var radius = ((d.radius / 100) * (d.oh / 2));
+							if (oWidth > oHeight)
+								var radius = ((d.radius / 100) * (oHeight / 2));
 							else
-								var radius = ((d.radius / 100) * (d.ow / 2));
+								var radius = ((d.radius / 100) * (oWidth / 2));
 
 							//this alows us to not let oval go outside bounds.
-							var obj_ratiox = ((d.ow / 2) - radius) / (d.ow / 2);
-							var obj_ratioy = ((d.oh / 2) - radius) / (d.oh / 2);
+							var obj_ratiox = ((oWidth / 2) - radius) / (oWidth / 2);
+							var obj_ratioy = ((oHeight / 2) - radius) / (oHeight / 2);
 
-							var x = (((d.offsetx) / 100) * ((d.ow / 2) * obj_ratiox)) + (d.ow / 2); ///scalex;
-							var y = (((d.offsety) / 100) * ((d.oh / 2) * obj_ratioy)) + (d.oh / 2); ///scaley;
+							var x = (((d.offsetx) / 100) * ((oWidth / 2) * obj_ratiox)) + (oWidth / 2); ///scalex;
+							var y = (((d.offsety) / 100) * ((oHeight / 2) * obj_ratioy)) + (oHeight / 2); ///scaley;
 							ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
 							ctx.stroke();
 						}
-						else if (this.round_border == 'oval') {
-							var rx = (d.rx / 100) * d.ow; //
-							var ry = (d.ry / 100) * d.oh; //
+						else if (this.round_border === 'oval') {
+							var rx = (d.rx / 100) * oWidth; //
+							var ry = (d.ry / 100) * oHeight; //
 
 							//this allows us to not let oval go outside bounds.
-							var obj_ratiox = ((d.ow / 2) - rx / 2) / (d.ow / 2);
-							var obj_ratioy = ((d.oh / 2) - ry / 2) / (d.oh / 2);
+							var obj_ratiox = ((oWidth / 2) - rx / 2) / (oWidth / 2);
+							var obj_ratioy = ((oHeight / 2) - ry / 2) / (oHeight / 2);
 
-							var x = (((d.offsetx) / 100) * ((d.ow / 2) * obj_ratiox)) + (d.ow / 2); /// need to add offset to bring to center for this canvas
-							var y = (((d.offsety) / 100) * ((d.oh / 2) * obj_ratioy)) + (d.oh / 2); ///
+							var x = (((d.offsetx) / 100) * ((oWidth / 2) * obj_ratiox)) + (oWidth / 2); /// need to add offset to bring to center for this canvas
+							var y = (((d.offsety) / 100) * ((oHeight / 2) * obj_ratioy)) + (oHeight / 2); ///
 
-							fabric.Object.drawEllipse(ctx, x, y, rx * 1.32, ry);
+							ctx.ellipse(x, y, rx / 2, ry / 2, 0, 0, 2 * Math.PI);
 							ctx.stroke();
 						}
 						else { // this.round_border == "Square
-							fabric.Object.drawRoundRect(ctx, obj.my.x, obj.my.y, obj.width, obj.height, obj.my.corner_radius, true);
+							fabric.Object.drawRoundRect(ctx, obj.my.x, obj.my.y, oWidth, oHeight, obj.my.corner_radius, true);
 							ctx.stroke();
 						}
 					}
@@ -1949,10 +1953,12 @@ $(document).ready(function () {
 			if (obj.type === 'CzImage' && obj.graphic != 'border' && !obj.panel) {
 				//if we have a bunch of data to use to apply border then....	
 				if ((('clipPath' in obj) || ('clipTo' in obj)) && (obj.clipPath || obj.clipTo) && ('my' in obj)
-					&& obj.my.hasBorder == 'ON' && ('frame_round_border' in obj) && obj.frame_round_border && ('hasBorder' in obj.my))
-					zc.frame_round_border(obj.frame_round_border, obj);
-				else if (('cropX' in obj || 'cropY' in obj) || (obj.cx != 0 || obj.cy != 0 || obj.cw != obj.width || obj.ch != obj.height))
+					&& obj.my.hasBorder == 'ON' && ('frame_round_border' in obj) && obj.frame_round_border && ('hasBorder' in obj.my)) {
+						zc.frame_round_border(obj.frame_round_border, obj);
+					}
+				else if (('cropX' in obj || 'cropY' in obj) || (obj.cx != 0 || obj.cy != 0 || obj.cw != obj.width || obj.ch != obj.height)) {
 					zc.frame_round_border(null, obj);
+				}
 			}
 		});
 	}
@@ -3097,10 +3103,6 @@ $(document).ready(function () {
 					obj.my.strokeWidth = Number($('#border_image_size').val());
 					obj.my.stroke = $("#border_image_colorpicker").spectrum("get").toRgbString();
 					obj.my.corner_radius = Number($('#border_image_radius').val());
-					// obj.clipTo = function (ctx) {
-					// 	fabric.Object.drawRoundRect(ctx, this.my.x, this.my.y, this.width, this.height, this.my.corner_radius);
-					// 	// fabric.Object.drawEllipse(ctx, this.my.x, this.my.y, this.my.oval_rx*1.30, this.my.oval_ry);
-					// }
 
 					obj.clipPath = null
 					obj.clipPath = new fabric.Rect({
@@ -3134,9 +3136,6 @@ $(document).ready(function () {
 					obj.my.oval_rx = _rx;
 					obj.my.oval_ry = _ry;
 
-					// obj.clipTo = function (ctx) {
-					// 	fabric.Object.drawEllipse(ctx, this.my.x, this.my.y, this.my.oval_rx * 1.30, this.my.oval_ry);
-					// }
 					obj.clipPath = null
 					obj.clipPath = new fabric.Ellipse({
 						left: x,
@@ -3221,26 +3220,6 @@ $(document).ready(function () {
 		canvas.add(object);
 		canvas.renderAll();
 	}
-
-	fabric.Object.drawEllipse = function (context, centerX, centerY, width, height) {
-
-		context.beginPath();
-
-		context.moveTo(centerX, centerY - height / 2); // A1
-
-		context.bezierCurveTo(
-			centerX + width / 2, centerY - height / 2, // C1
-			centerX + width / 2, centerY + height / 2, // C2
-			centerX, centerY + height / 2); // A2
-
-		context.bezierCurveTo(
-			centerX - width / 2, centerY + height / 2, // C3
-			centerX - width / 2, centerY - height / 2, // C4
-			centerX, centerY - height / 2); // A1
-
-		context.closePath();
-
-	};
 
 	fabric.Object.drawRoundRect = function (ctx, x, y, width, height, radius, border = false) {
 		var x1 = x - width / 2
@@ -4444,6 +4423,10 @@ $(document).ready(function () {
 							obj.stroke = 'rgb(0, 0, 0)';
 						}
 
+						if (!obj.hasBorders) {
+							obj.hasBorders = true
+						}
+
 						if (obj.my && obj.my.stroke == "") {
 							obj.my.stroke = 'rgb(0, 0, 0)';
 							obj.stroke = 'rgb(0, 0, 0)';
@@ -4910,6 +4893,7 @@ $(document).ready(function () {
 			index = 0;
 			return;
 		}
+		canvas.discardActiveObject();
 
 		var found = findCanvasObject(list[index - 1].itemID, 'itemID', '', '');
 
@@ -4975,6 +4959,8 @@ $(document).ready(function () {
 
 		if (index >= state.length - 1)
 			return;
+
+		canvas.discardActiveObject();
 
 		var found = findCanvasObject(list[index + 1].itemID, 'itemID', '', '');
 
