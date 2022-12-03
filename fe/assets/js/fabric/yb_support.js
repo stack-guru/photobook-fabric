@@ -1,234 +1,7 @@
 //home page add interaction code
 $(document).ready(function () {
 
-	//change prototype
-
-	// fabric.Textbox.prototype.initialize = function (text, options) {
-
-	// 	if (!text) {
-	// 		text = "Text Here!"
-	// 	}
-	// 	this.ctx = fabric.util.createCanvasElement().getContext('2d');
-
-	// 	this.callSuper('initialize', text, options);
-
-	// 	this.set({
-	// 		lockUniScaling: false,
-	// 		lockScalingY: true,
-	// 		lockScalingFlip: true,
-	// 		hasBorders: true
-	// 	});
-	// 	//this.setControlsVisibility(fabric.Textbox.getTextboxControlVisibility());
-
-	// 	// add width to this list of props that effect line wrapping.
-	// 	// this._dimensionAffectingProps.width = true;
-	// 	this.setupState({ propertySet: '_dimensionAffectingProps' });
-	// }
-
-	// fabric.Canvas.prototype.getCornerCursor = function (corner, target) {
-	// 	switch (corner) {
-	// 		case 'bl':
-	// 		case 'mtr':
-	// 			this.setCursor(this.rotationCursor);
-	// 			return;
-	// 		case 'ml':
-	// 		case 'mr':
-	// 			this.setCursor('w-resize');
-	// 			return;
-	// 		case 'mt':
-	// 		case 'mb':
-	// 			this.setCursor('ns-resize');
-	// 			return;
-	// 		case 'tl':
-	// 			this.setCursor('se-resize');
-	// 			return;
-	// 		case 'tr':
-	// 			this.setCursor('nesw-resize');
-	// 			return;
-	// 		case 'br':
-	// 			if (target.type == "Textbox")
-	// 				this.setCursor('w-resize');
-	// 			else
-	// 				this.setCursor('se-resize');
-	// 			return;
-	// 		default:
-	// 			this.setCursor(this.defaultCursor);
-	// 			return false;
-	// 	}
-	// }
-
-	// fabric.Canvas.prototype._getActionFromCorner = function (alreadySelected, corner, e) {
-	// 	if (!corner || !alreadySelected) {
-	// 		return 'drag';
-	// 	}
-
-	// 	const aObjects = this.getActiveObjects()
-	// 	switch (corner) {
-	// 		case 'ml':
-	// 		case 'mr':
-	// 			return 'scaleX';
-	// 		case 'mt':
-	// 		case 'mb':
-	// 			return 'scaleY';
-	// 		case 'bl':
-	// 			return 'rotate';
-	// 		case 'br':
-	// 			if (aObjects.length === 1 && aObjects[0].type === 'Textbox') return 'scaleX'
-	// 		default:
-	// 			return 'scale';
-	// 	}
-	// }
-
-	// fabric.Object.prototype.drawBorders = function (ctx) {
-	// 	if (!this.hasBorders) {
-	// 		return this;
-	// 	}
-
-	// 	console.log('----------draw Borders')
-
-	// 	ctx.save();
-
-	// 	ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;
-	// 	ctx.strokeStyle = this.borderColor;
-	// 	ctx.lineWidth = 1 / this.borderScaleFactor;
-
-	// 	var wh = this._calculateCurrentDimensions(true),
-	// 		width = wh.x,
-	// 		height = wh.y;
-	// 	if (this.group) {
-	// 		width = width * this.group.scaleX;
-	// 		height = height * this.group.scaleY;
-	// 	}
-
-	// 	var x = ~~(-(width / 2)) - 0.5;
-	// 	var y = ~~(-(height / 2)) - 0.5;
-	// 	var w = ~~(width) + 1;
-	// 	var h = ~~(height) + 1;
-
-	// 	/*var x = (width / 2) - 0.5;
-	// 	var y = (height / 2) - 0.5;
-	// 	var w = ~~(width) + 1;
-	// 	var h = ~~(height) + 1;*/
-
-	// 	if (this.borderDashArray) {
-	// 		ctx.beginPath();
-	// 		fabric.util.drawDashedLine(ctx, x, y, x + w, y, this.borderDashArray);
-	// 		fabric.util.drawDashedLine(ctx, x + w, y, x + w, y + h, this.borderDashArray);
-	// 		fabric.util.drawDashedLine(ctx, x + w, y + h, x, y + h, this.borderDashArray);
-	// 		fabric.util.drawDashedLine(ctx, x, y + h, x, y, this.borderDashArray);
-	// 		ctx.stroke();
-	// 		ctx.closePath();
-	// 	}
-
-	// 	if (this.hasRotatingPoint && this.isControlVisible('mtr') && !this.get('lockRotation') && this.hasControls) {
-
-	// 		var rotateHeight = -height / 2;
-
-	// 		ctx.beginPath();
-	// 		ctx.moveTo(0, rotateHeight);
-	// 		ctx.lineTo(0, rotateHeight - this.rotatingPointOffset);
-	// 		ctx.closePath();
-	// 		ctx.stroke();
-	// 	}
-
-	// 	ctx.restore();
-	// 	return this;
-	// }
-
-
-	// fabric.Object.prototype.drawControls = function (ctx, styleOverride) {
-	// 	if (!this.hasControls)
-	// 		return this;
-
-	// 	styleOverride = styleOverride || {};
-	// 	var wh = this._calculateCurrentDimensions(),
-	// 		width = wh.x,
-	// 		height = wh.y,
-	// 		scaleOffset = styleOverride.cornerSize || this.cornerSize,
-	// 		left = -(width + scaleOffset) / 2,
-	// 		top = -(height + scaleOffset) / 2,
-	// 		transparentCorners = typeof styleOverride.transparentCorners !== 'undefined' ?
-	// 			styleOverride.transparentCorners : this.transparentCorners,
-	// 		hasRotatingPoint = typeof styleOverride.hasRotatingPoint !== 'undefined' ?
-	// 			styleOverride.hasRotatingPoint : this.hasRotatingPoint,
-	// 		methodName = transparentCorners ? 'stroke' : 'fill';
-
-	// 	ctx.save();
-	// 	ctx.strokeStyle = ctx.fillStyle = styleOverride.cornerColor || this.cornerColor;
-	// 	if (!this.transparentCorners) {
-	// 		ctx.strokeStyle = styleOverride.cornerStrokeColor || this.cornerStrokeColor;
-	// 	}
-	// 	this._setLineDash(ctx, styleOverride.cornerDashArray || this.cornerDashArray, null);
-
-	// 	const iconSize = 25
-
-	// 	// top-left
-	// 	this._drawControl('tl', ctx, methodName,
-	// 		left,
-	// 		top, styleOverride);
-
-	// 	// top-right
-	// 	this._drawControl('tr', ctx, methodName,
-	// 		left + width,
-	// 		top, styleOverride);
-
-	// 	//bottom-left
-	// 	this._drawControl('bl', ctx, methodName,
-	// 		left,
-	// 		top + height, styleOverride);
-
-	// 	var rotate = new Image();
-	// 	rotate.src = rotateSRC;
-	// 	ctx.drawImage(rotate, left, top + height, iconSize, iconSize);
-
-	// 	//bottom-right
-	// 	this._drawControl('br', ctx, methodName,
-	// 		left + width,
-	// 		top + height, styleOverride);
-
-	// 	var scale = new Image();
-	// 	if (this.type == "CzImage")
-	// 		scale.src = scale1SRC;
-	// 	else if (this.type == "Textbox")
-	// 		scale.src = scale2SRC;
-	// 	else
-	// 		scale.src = scale1SRC;
-	// 	ctx.drawImage(scale, left + width, top + height, iconSize, iconSize);
-
-	// 	if (!this.get('lockUniScaling')) {
-
-	// 		// middle-top
-	// 		this._drawControl('mt', ctx, methodName,
-	// 			left + width / 2,
-	// 			top, styleOverride);
-
-	// 		// middle-bottom
-	// 		this._drawControl('mb', ctx, methodName,
-	// 			left + width / 2,
-	// 			top + height, styleOverride);
-
-	// 		// middle-right
-	// 		this._drawControl('mr', ctx, methodName,
-	// 			left + width,
-	// 			top + height / 2, styleOverride);
-
-	// 		// middle-left
-	// 		this._drawControl('ml', ctx, methodName,
-	// 			left,
-	// 			top + height / 2, styleOverride);
-	// 	}
-
-	// 	// middle-top-rotate
-	// 	if (hasRotatingPoint) {
-	// 		this._drawControl('mtr', ctx, methodName,
-	// 			left + width / 2,
-	// 			top - this.rotatingPointOffset, styleOverride);
-	// 	}
-	// 	ctx.restore();
-
-	// 	return this;
-	// };
-
+	//CzImage
 	var dirty = false;
 	var itemID = 0; //this will give each object, image/text a unique item for keeping track of the undo redo.
 	var movedItems = [];
@@ -769,16 +542,17 @@ $(document).ready(function () {
 				fImg.padding = 7;
 				fImg.borderDashArray = [10, 5];
 
-				fImg.setControlsVisibility({
-					tl: false, // top left
-					tr: false, // top right
-					mt: false, // middle top
-					mb: false,  // middle bottom
-					mr: false, // middle right
-					ml: false,  // middle left,
-					br: true, // bottom right
-					bl: true // bottom left							
-				});
+				// fImg.setControlsVisibility({
+				// 	tl: false, // top left
+				// 	tr: false, // top right
+				// 	mt: false, // middle top
+				// 	mb: false,  // middle bottom
+				// 	mr: false, // middle right
+				// 	ml: false,  // middle left,
+				// 	mtr: false, // rotate control
+				// 	br: true, // bottom right
+				// 	bl: true // bottom left							
+				// });
 
 				if (opts.replaced)
 					fImg.set('replaced', true);
@@ -979,7 +753,6 @@ $(document).ready(function () {
 
 		obj.set("filters", plc_obj.filters);
 	}
-
 
 	//set canvas width + a bit for tick marks.
 	aspectRatio = (canvasWidth * numPages) / canvasHeight;
@@ -1721,7 +1494,7 @@ $(document).ready(function () {
 			$("#top_image_menu").css(
 				{
 					position: "absolute",
-					top: (top - menu_height - top_image_menu_offset - 30) + "px",
+					top: (top - menu_height - top_image_menu_offset) + "px",
 					left: top_image_menu_left + "px"
 				});
 
@@ -1954,8 +1727,8 @@ $(document).ready(function () {
 				//if we have a bunch of data to use to apply border then....	
 				if ((('clipPath' in obj) || ('clipTo' in obj)) && (obj.clipPath || obj.clipTo) && ('my' in obj)
 					&& obj.my.hasBorder == 'ON' && ('frame_round_border' in obj) && obj.frame_round_border && ('hasBorder' in obj.my)) {
-						zc.frame_round_border(obj.frame_round_border, obj);
-					}
+					zc.frame_round_border(obj.frame_round_border, obj);
+				}
 				else if (('cropX' in obj || 'cropY' in obj) || (obj.cx != 0 || obj.cy != 0 || obj.cw != obj.width || obj.ch != obj.height)) {
 					zc.frame_round_border(null, obj);
 				}
@@ -1989,6 +1762,68 @@ $(document).ready(function () {
 			}
 		});
 	}
+
+	//customize controls
+	fabric.Object.prototype.setControlsVisibility({
+		tl: false, //top-left
+		mt: false, // middle-top
+		tr: false, //top-right
+		ml: false, //middle-left
+		mr: false, //middle-right
+		bl: true, // bottom-left
+		mb: false, //middle-bottom
+		br: true, //bottom-right
+		mtr: false
+	});
+
+	const blControl = new fabric.Control({
+		x: -0.5,
+		y: 0.5,
+		actionHandler: fabric.controlsUtils.rotationWithSnapping,
+		cursorStyleHandler: () => 'url(' + rotationCursorSRC + '), default' ,
+		withConnection: true,
+		actionName: 'rotate',
+		render: (ctx, left, top) => {
+			var rotate = new Image();
+			rotate.src = rotateSRC;
+			ctx.save();
+			ctx.drawImage(rotate, left - 13, top - 13, 25, 25);
+			ctx.restore();
+		}
+	});
+	const brTextBox = new fabric.Control({
+		x: 0.5,
+		y: 0.5,
+		actionHandler: fabric.controlsUtils.changeWidth,
+		cursorStyleHandler: () => 'w-resize',
+		actionName: 'resizing',
+		render: (ctx, left, top) => {
+			var rotate = new Image();
+			rotate.src = scale2SRC;
+			ctx.save();
+			ctx.drawImage(rotate, left - 13, top - 13, 25, 25);
+			ctx.restore();
+		}
+	});
+	const brControl = new fabric.Control({
+		x: 0.5,
+		y: 0.5,
+		actionHandler: fabric.controlsUtils.scalingEqually,
+		cursorStyleHandler: () => 'se-resize',
+		render: (ctx, left, top) => {
+			var rotate = new Image();
+			rotate.src = scale1SRC;
+			ctx.save();
+			ctx.drawImage(rotate, left - 13, top - 13, 25, 25);
+			ctx.restore();
+		}
+	});
+
+	fabric.Textbox.prototype.controls.bl = blControl
+	fabric.Textbox.prototype.controls.br = brTextBox
+	fabric.Image.prototype.controls.bl = blControl
+	fabric.Image.prototype.controls.br = brControl
+
 
 	$("#add_text").click(function (e) {
 		addText();
