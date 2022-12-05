@@ -542,18 +542,6 @@ $(document).ready(function () {
 				fImg.padding = 7;
 				fImg.borderDashArray = [10, 5];
 
-				// fImg.setControlsVisibility({
-				// 	tl: false, // top left
-				// 	tr: false, // top right
-				// 	mt: false, // middle top
-				// 	mb: false,  // middle bottom
-				// 	mr: false, // middle right
-				// 	ml: false,  // middle left,
-				// 	mtr: false, // rotate control
-				// 	br: true, // bottom right
-				// 	bl: true // bottom left							
-				// });
-
 				if (opts.replaced)
 					fImg.set('replaced', true);
 
@@ -1764,6 +1752,8 @@ $(document).ready(function () {
 	}
 
 	//customize controls
+	var controlSize = 25
+
 	fabric.Object.prototype.setControlsVisibility({
 		tl: false, //top-left
 		mt: false, // middle-top
@@ -1787,7 +1777,7 @@ $(document).ready(function () {
 			var rotate = new Image();
 			ctx.save();
 			rotate.onload = function(){
-				ctx.drawImage(rotate, left - 13, top - 13, 25, 25);
+				ctx.drawImage(rotate, left - controlSize / 2, top - controlSize / 2 , controlSize, controlSize);
 			};
 			rotate.src = rotateSRC;
 			ctx.restore();
@@ -1801,12 +1791,15 @@ $(document).ready(function () {
 		actionName: 'resizing',
 		render: (ctx, left, top, style, obj) => {
 			var scale = new Image();
-			ctx.save();
-			scale.onload = function(){
-				ctx.drawImage(scale, left - 13, top - 13, 25, 25);
-			};
 			scale.src = scale2SRC;
-			ctx.restore();
+			scale.onload = function(){    
+				ctx.save();
+				ctx.translate(left, top);
+				ctx.rotate(obj.angle * Math.PI / 180)
+				ctx.translate(-left, -top);
+				ctx.drawImage(scale, left - controlSize / 2, top - controlSize / 2 , controlSize, controlSize);
+				ctx.restore();
+			};
 		}
 	});
 	const brControl = new fabric.Control({
@@ -1814,14 +1807,17 @@ $(document).ready(function () {
 		y: 0.5,
 		actionHandler: fabric.controlsUtils.scalingEqually,
 		cursorStyleHandler: () => 'se-resize',
-		render: (ctx, left, top) => {
+		render: (ctx, left, top, style, obj) => {
 			var scale = new Image();
-			ctx.save();
-			scale.onload = function(){
-				ctx.drawImage(scale, left - 13, top - 13, 25, 25);
-			};
 			scale.src = scale1SRC;
-			ctx.restore();
+			scale.onload = function(){    
+				ctx.save();
+				ctx.translate(left, top);
+				ctx.rotate(obj.angle * Math.PI / 180)
+				ctx.translate(-left, -top);
+				ctx.drawImage(scale, left - controlSize / 2, top - controlSize / 2 , controlSize, controlSize);
+				ctx.restore();
+			};
 		}
 	});
 
@@ -1829,7 +1825,6 @@ $(document).ready(function () {
 	fabric.Textbox.prototype.controls.br = brTextBox
 	fabric.Image.prototype.controls.bl = blControl
 	fabric.Image.prototype.controls.br = brControl
-
 
 	$("#add_text").click(function (e) {
 		addText();
@@ -2044,9 +2039,7 @@ $(document).ready(function () {
 
 		$("#zoom_div").hide();
 		$(".image_menu_divs").show();
-
 	}
-
 
 	var crop_timer, zoom_once;
 	var crop_timer_set = false, zoom_reset = false;
@@ -3139,17 +3132,6 @@ $(document).ready(function () {
 			textDecoration: 'normal',
 			lineHeight: 1,
 			textAlign: 'left',
-			_controlsVisibility: {
-				tl: false, // top left
-				tr: false, // top right
-				mt: false, // middle top
-				mb: false,  // middle bottom
-				mr: false, // middle right
-				ml: false,  // middle left
-				br: true, // bottom right
-				bl: true,  // bottom left
-				mtr: false
-			},
 			itemID: itemID++,
 		});
 
@@ -3959,7 +3941,6 @@ $(document).ready(function () {
 	var canvas_customProperties = 'globalScale grid_showing grid snap_grid template'.split(' ');
 
 	$("#save").click(function (e) {
-
 		//disable the save button.
 		$("#save").attr("disabled", true);
 		dirty = false;
@@ -3995,8 +3976,8 @@ $(document).ready(function () {
 		if (!is_staff_page()) {
 			canvas.template = thisTemplate;
 		}
-
 		//get thumbnail based on trim lines.		
+
 		// cropped png dataURL
 		var list_thumbnail_width = 200;
 		var thumb_scale = list_thumbnail_width / ((1 / globalScale) * (canvas.width - trim));
@@ -4255,8 +4236,10 @@ $(document).ready(function () {
 					$.each(t.objects, function (k, obj) {
 						if (obj.type == "Textbox") obj.visible = false
 
-						if (obj._controlsVisibility)
+						if (obj._controlsVisibility) {
 							obj._controlsVisibility.br = obj._controlsVisibility.bl = true;
+							obj._controlsVisibility.mtr = false;
+						}
 
 						obj.lockMovementX = obj.lockMovementY = obj.lockScalingX = obj.lockScalingY = obj.lockRotation = false;
 
