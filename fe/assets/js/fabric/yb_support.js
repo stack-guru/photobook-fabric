@@ -803,10 +803,12 @@ $(document).ready(function () {
 				var h = '';
 				h += '<div class="image_menus all_menus panel" id="top_image_menu" style="display:none; width:' + top_image_menu_width + 'px;">';
 				h += '	<div id="top_image_menu_div" class="image_menu_divs">';
-				h += '		<button class="bring_front btn btn-default col-md-3" title="Bring Forward" type="button"><img src="' + img_path + 'bring_front.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="send_back btn btn-default col-md-3" title="Send Backward" type="button"><img src="' + img_path + 'send_back.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="crop_mode btn btn-default col-md-3" title="Crop Image" type="button"><img src="' + img_path + 'crop_zoom.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="copy_object copy_image btn btn-default col-md-3" title="Copy Image" type="button"><img src="' + img_path + 'copy.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="bring_front btn btn-default col-md-2" title="Bring Forward" type="button"><img src="' + img_path + 'bring_front.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="send_back btn btn-default col-md-2" title="Send Backward" type="button"><img src="' + img_path + 'send_back.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="align_horizontal_center btn btn-default col-md-2" title="Align Horizontal Center" type="button"><img src="' + img_path + 'h-align-center.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="align_vertical_center btn btn-default col-md-2" title="Align Vertical Center" type="button"><img src="' + img_path + 'v-align-center.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="crop_mode btn btn-default col-md-2" title="Crop Image" type="button"><img src="' + img_path + 'crop_zoom.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="copy_object copy_image btn btn-default col-md-2" title="Copy Image" type="button"><img src="' + img_path + 'copy.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
 				h += '	</div>';
 
 				h += '	<div id="zoom_div" class="text-right" style="display:none;">';
@@ -1054,9 +1056,11 @@ $(document).ready(function () {
 				var h = '';
 				h += '<div class="text_menus all_menus panel" id="top_text_menu" style="display:none; width:' + top_text_menu_width + 'px;">';
 				h += '	<div id="top_text_menu_div" class="text_menu_divs">';
-				h += '		<button class="bring_front btn btn-default col-md-4" title="Bring Forward" type="button"><img src="' + img_path + 'bring_front.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="send_back btn btn-default col-md-4" title="Send Backward" type="button"><img src="' + img_path + 'send_back.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="copy_object copy_text btn btn-default col-md-4" title="Copy Text" type="button"><img src="' + img_path + 'copy.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="bring_front btn btn-default col-md-3" title="Bring Forward" type="button"><img src="' + img_path + 'bring_front.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="send_back btn btn-default col-md-3" title="Send Backward" type="button"><img src="' + img_path + 'send_back.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="align_horizontal_center btn btn-default col-md-2" title="Align Horizontal Center" type="button"><img src="' + img_path + 'h-align-center.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="align_vertical_center btn btn-default col-md-2" title="Align Vertical Center" type="button"><img src="' + img_path + 'v-align-center.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+				h += '		<button class="copy_object copy_text btn btn-default col-md-2" title="Copy Text" type="button"><img src="' + img_path + 'copy.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
 				h += '	</div>';
 				h += '</div>';
 
@@ -1766,18 +1770,20 @@ $(document).ready(function () {
 		mtr: false
 	});
 
+	var rotate = new Image();
+	var scale = new Image();
+
 	const blControl = new fabric.Control({
 		x: -0.5,
 		y: 0.5,
 		actionHandler: fabric.controlsUtils.rotationWithSnapping,
-		cursorStyleHandler: () => 'url(' + rotationCursorSRC + '), default' ,
+		cursorStyleHandler: () => 'url(' + rotationCursorSRC + '), default',
 		withConnection: true,
 		actionName: 'rotate',
 		render: (ctx, left, top) => {
-			var rotate = new Image();
 			ctx.save();
-			rotate.onload = function(){
-				ctx.drawImage(rotate, left - controlSize / 2, top - controlSize / 2 , controlSize, controlSize);
+			rotate.onload = function () {
+				ctx.drawImage(rotate, left - controlSize / 2, top - controlSize / 2, controlSize, controlSize);
 			};
 			rotate.src = rotateSRC;
 			ctx.restore();
@@ -1790,14 +1796,13 @@ $(document).ready(function () {
 		cursorStyleHandler: () => 'w-resize',
 		actionName: 'resizing',
 		render: (ctx, left, top, style, obj) => {
-			var scale = new Image();
 			scale.src = scale2SRC;
-			scale.onload = function(){    
+			scale.onload = function () {
 				ctx.save();
 				ctx.translate(left, top);
 				ctx.rotate(obj.angle * Math.PI / 180)
 				ctx.translate(-left, -top);
-				ctx.drawImage(scale, left - controlSize / 2, top - controlSize / 2 , controlSize, controlSize);
+				ctx.drawImage(scale, left - controlSize / 2, top - controlSize / 2, controlSize, controlSize);
 				ctx.restore();
 			};
 		}
@@ -1808,14 +1813,13 @@ $(document).ready(function () {
 		actionHandler: fabric.controlsUtils.scalingEqually,
 		cursorStyleHandler: () => 'se-resize',
 		render: (ctx, left, top, style, obj) => {
-			var scale = new Image();
 			scale.src = scale1SRC;
-			scale.onload = function(){    
+			scale.onload = function () {
 				ctx.save();
 				ctx.translate(left, top);
 				ctx.rotate(obj.angle * Math.PI / 180)
 				ctx.translate(-left, -top);
-				ctx.drawImage(scale, left - controlSize / 2, top - controlSize / 2 , controlSize, controlSize);
+				ctx.drawImage(scale, left - controlSize / 2, top - controlSize / 2, controlSize, controlSize);
 				ctx.restore();
 			};
 		}
@@ -1957,6 +1961,24 @@ $(document).ready(function () {
 
 	});
 
+	// align single item center
+	$("#canvas_div").on('click', ".align_horizontal_center", function(e) {
+		let obj = canvas.getActiveObject()
+		if (obj.type === "Textbox")
+			obj.left = canvas.width / 2
+		else
+			obj.left = canvas.width / 2 - obj.width / 2
+		canvas.renderAll()
+		$(".all_menus").hide();
+	});
+
+	$("#canvas_div").on('click', ".align_vertical_center", function(e) {
+		let obj = canvas.getActiveObject()
+		obj.top = canvas.height / 2 - obj.height / 2
+		canvas.renderAll()
+		$(".all_menus").hide();
+	});
+
 	//prevents window resize trigger
 	$('#canvas_div').on('resize', "#crop_div", function (e) {
 		e.stopPropagation();
@@ -2010,8 +2032,10 @@ $(document).ready(function () {
 			setTimeout(function () {
 				if (filter) {
 					var obj = canvas.getActiveObject();
-					obj.applyFilters();
-					canvas.requestRenderAll();
+					if (obj) {
+						obj.applyFilters();
+						canvas.requestRenderAll();
+					}
 				}
 				if (reset)
 					resetCropMode();
@@ -2126,20 +2150,20 @@ $(document).ready(function () {
 	var clonedObject = false;
 
 	$('#canvas_div').on('click', ".copy_object", function (e) {
+		var clone = fabric.util.object.clone(canvas.getActiveObject());
 
-		var obj = canvas.getActiveObject();
-		var clone;
-
-		if ($(this).hasClass("copy_text"))
-			clone = fabric.Textbox.fromObject(obj.toObject());
-		else if ($(this).hasClass("copy_image"))
-			clone = $.extend(true, {}, obj);
-		else
-			return false;
+		// if ($(this).hasClass("copy_text")) {
+		// 	// clone = fabric.Textbox.fromObject(obj.toObject());
+		// 	clone = fabric.util.object.clone(obj)
+		// }
+		// else if ($(this).hasClass("copy_image"))
+		// 	clone = $.extend(true, {}, obj);
+		// else
+		// 	return false;
 
 		clone.set({
-			top: clone.get('top') + (200 * globalScale),
-			left: clone.get('left') + (100 * globalScale),
+			top: clone.get('top') + (50 * globalScale),
+			left: clone.get('left') + (50 * globalScale),
 			itemID: itemID++
 		});
 
@@ -4113,7 +4137,6 @@ $(document).ready(function () {
 
 	}
 
-	var webfontsloaded = false;
 	function loadFonts() {
 
 		var default_fonts = ['Arial', 'Calibri', 'Courier New', 'Myriad Pro', 'Delicious', 'Verdana', 'Georgia', 'Courier', 'Comic Sans MS', 'Impact', 'Monaco'];
@@ -4126,7 +4149,7 @@ $(document).ready(function () {
 				},
 				classes: false,
 				active: function () {
-					webfontsloaded = true; //done loading then we can load the page.
+					loadCanvas()
 				},
 				custom: {
 					families: default_fonts
@@ -4141,13 +4164,15 @@ $(document).ready(function () {
 				},
 				classes: false,
 				active: function () {
-					webfontsloaded = true; //done loading then we can load the page.
+					loadCanvas()
 				}
 			});
 
 		}
 
 	}
+
+	loadFonts()
 
 	function showTextBoxes() {
 		canvas.forEachObject(function (obj) {
@@ -4158,7 +4183,15 @@ $(document).ready(function () {
 		})
 	}
 
+	function setCanvasOpacityValue() {
+		let opacity = 100
+		if (canvas.backgroundImage && canvas.backgroundImage.opacity) opacity = canvas.backgroundImage.opacity * 100
+		$("#background-opacity").val(opacity)
+	}
+
 	function loadCanvas() {
+		console.log('load canvas')
+
 		//$("#loading").show();
 		if (is_com_user_page()) {
 			req = '/red/yrb_pges/ld_pge_com_ajax';
@@ -4177,7 +4210,6 @@ $(document).ready(function () {
 			var new_canvas = '{"objects":[],"background":"","globalScale":1,"grid_showing":true,"grid":"30","snap_grid":true}';
 		}
 
-
 		$.ajax({
 			url: req,
 			data: data,
@@ -4190,7 +4222,7 @@ $(document).ready(function () {
 						var title = "Template: " + data.template_name;
 						$("#template_title").text(title);
 					}
-					loadFonts();
+					// loadFonts();
 					if (is_staff_page()) {
 						if (!data.template_json_data) {
 							data.template_json_data = new_canvas;
@@ -4297,7 +4329,10 @@ $(document).ready(function () {
 
 					});
 
+					console.log('before load from json')
 					canvas.loadFromJSON(t, function () {
+						console.log('after load from json')
+						setCanvasOpacityValue()
 						applyImageBorders();
 						setTimeout(function () {
 							showTextBoxes();
@@ -5220,10 +5255,7 @@ $(document).ready(function () {
 		});
 	}
 
-
-
 	function getGraphicImages(subcat_id, type) {
-
 		thumb_div_width = 0;
 
 		var type_low = type.toLowerCase();
@@ -5249,9 +5281,7 @@ $(document).ready(function () {
 			type: "POST",
 			dataType: 'json',
 			success: function (data) {
-
 				if (!check_login_ajax(data)) return false; //redirect if not logged in.
-
 				//return false;
 
 				$("#" + type_low + "_message").text('');
@@ -5556,8 +5586,7 @@ $(document).ready(function () {
 	}
 
 	function getBackgrounds() {
-
-		$("#background_message").text('');
+		// $("#background_message").text('');
 		$("#background_search_term").val('');
 
 		bgs_div_width = 0;
@@ -5847,36 +5876,6 @@ $(document).ready(function () {
 
 	$("#loading").show();
 
-	//check if web fonts loadedbefore starting.	
-	var webfontload_timer = null;
-	if (!webfontsloaded)
-		webfontload_timer = setInterval(function () {
-			checkstart();
-		}, 500); //.5 second
-	else
-		checkstart();
-
-	//if load canvas not started yet this will kick it off after 10 seconds., stuff happens
-	setTimeout(function () {
-		if (!webfontsloaded) {
-			webfontsloaded = true;
-			checkstart();
-		}
-	}, 10000);
-
-	function checkstart() {
-		if (webfontsloaded) {
-			//add in a small delay.
-			setTimeout(function () {
-				loadCanvas();
-			}, 5000);
-
-			if (typeof webfontload_timer != 'undefined')
-				clearInterval(webfontload_timer);
-
-		}
-	}
-
 	$('#add_photo_to_canvas').on('click', function (e) {
 		if (!check_drag_img('photos') || !dragImg) {
 			alert("No photo selected!");
@@ -6014,4 +6013,58 @@ $(document).ready(function () {
 		saveState();
 	});
 
+	// change background opacity and flip
+	$("#background-opacity").change(e => {
+		if (canvas.backgroundImage) {
+			let value = parseInt(e.target.value)
+			if (value < 0) value = 0
+			else if (value > 100) value = 100
+			canvas.backgroundImage.opacity = value / 100
+			e.target.value = value
+			canvas.renderAll()
+		}
+	})
+
+	$(".background-vertical-flip").click(e => {
+		if (canvas.backgroundImage) {
+			canvas.backgroundImage.set('flipX', !canvas.backgroundImage.flipX);
+			canvas.renderAll();
+		}
+	})
+
+	$(".background-horizontal-flip").click(e => {
+		if (canvas.backgroundImage) {
+			canvas.backgroundImage.set('flipY', !canvas.backgroundImage.flipY);
+			canvas.renderAll();
+		}
+	})
+
+	// change background opacity and flip
+	$("#border-opacity").change(e => {
+		var obj = canvas.item(0);
+		if (obj && obj.graphic == "border") {
+			let value = parseInt(e.target.value)
+			if (value < 0) value = 0
+			else if (value > 100) value = 100
+			obj.opacity = value / 100
+			e.target.value = value
+			canvas.renderAll()
+		}
+	})
+
+	$(".border-vertical-flip").click(e => {
+		var obj = canvas.item(0);
+		if (obj && obj.graphic == "border") {
+			obj.set('flipX', !obj.flipX);
+			canvas.renderAll();
+		}
+	})
+
+	$(".border-horizontal-flip").click(e => {
+		var obj = canvas.item(0);
+		if (obj && obj.graphic == "border") {
+			obj.set('flipY', !obj.flipY);
+			canvas.renderAll();
+		}
+	})
 });
