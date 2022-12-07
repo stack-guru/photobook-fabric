@@ -316,7 +316,7 @@ div.client_border:hover {
 		if (pageData.show_mypage)
 		{
 			$("#show_mypage").val(pageData.ladder_page);
-			$("#show_mypage").text("My Page "+pageData.ladder_page+" Images");
+			$("#show_mypage").text("Page "+pageData.ladder_page+", Images Folder");
 		}
 		
 		var orderHome = window.location.protocol + "//" + window.location.hostname;
@@ -544,7 +544,7 @@ div.client_border:hover {
 						</h4>
 						<div class="panel-body">
 							<div id="border_select_div">
-								<div class="form-group col-md-4">
+								<div class="form-group col-md-3">
 									<label id="role_label" for="border_folder" class="control-label text-right">Select A Category:</label>
 									<div class="">
 										<select id="border_folder" class="form-control">
@@ -558,8 +558,8 @@ div.client_border:hover {
 										<button type="button" id="remove_border" style="padding: 1px 5px; font-size:14px;" class="btn btn-default mobile_button">Remove Border <i style="font-size: 1.2em;" class="fa fa-trash"></i></button>
 									</div>
 								</div>
-								<div class="form-group col-md-3">
-									<label for="border_search_term" class="control-label text-right">Search Borders:</label>
+								<div class="form-group col-md-2">
+									<label for="border_search_term" class="control-label text-right">Search:</label>
 									<div class="">
 										<input type="text" class="form-control" name="" id="border_search_term">
 									</div>
@@ -570,8 +570,21 @@ div.client_border:hover {
 										<button type="submit" cat="Border" id="border_search" class="image_search btn btn-primary mobile_button btn-sm">Search</button>
 									</div>
 								</div>
-								<div class="form-group col-md-2">
+								<!-- <div class="form-group col-md-2">
 									<div id="border_message" class="" style="clear:both; color:red"></div>
+								</div> -->
+								<div class="form-group col-md-1" title="Border Opacity">
+									<label for="border-opacity" class="control-label text-right">Opacity:</label>
+									<div class="">
+										<input type="number" min="1" max="100" class="form-control" name="" id="border-opacity" value="100">
+									</div>
+								</div>
+								<div class="form-group col-md-3" title="Flip Border">
+									<label class="control-label text-right">Flip:</label>
+									<div class="">
+										<button type="button"  class="border-vertical-flip btn btn-default btn-sm">H-Flip&nbsp;&nbsp;<i class="fa fa-arrows-h" aria-hidden="true"></i></button>
+										<button type="button"  class="border-horizontal-flip btn btn-default btn-sm">V-Flip&nbsp;&nbsp;<i class="fa fa-arrows-v" aria-hidden="true"></i></button>
+									</div>
 								</div>
 							</div>
 							<div style="overflow-y:hidden; overflow-x:auto; clear:both;">
@@ -592,7 +605,7 @@ div.client_border:hover {
 						</h4>
 						<div class="panel-body">
 							<div id="background_select_div">
-								<div class="form-group col-md-4">
+								<div class="form-group col-md-3">
 									<label id="role_label" for="background_folder" class="control-label text-right">Select A Category:</label>
 									<div class="">
 										<select id="background_folder" class="form-control">
@@ -606,8 +619,8 @@ div.client_border:hover {
 										<button type="button" id="remove_background" style="padding: 1px 5px; font-size:14px;" class="btn btn-default mobile_button">Remove Background <i style="font-size: 1.2em;" class="fa fa-trash"></i></button>
 									</div>
 								</div>
-								<div class="form-group col-md-3">
-									<label for="background_search_term" class="control-label text-right">Search Backgrounds:</label>
+								<div class="form-group col-md-2">
+									<label for="background_search_term" class="control-label text-right">Search:</label>
 									<div class="">
 										<input type="text" class="form-control" name="" id="background_search_term">
 									</div>
@@ -618,10 +631,24 @@ div.client_border:hover {
 										<button type="submit" cat="Background" id="background_search" class="image_search btn btn-primary mobile_button btn-sm">Search</button>
 									</div>
 								</div>
-								<div class="form-group col-md-2">
-									<div id="background_message" class="" style="clear:both; color:red; "></div>
+								<div class="form-group col-md-1" title="Background Opacity">
+									<label for="background-opacity" class="control-label text-right">Opacity:</label>
+									<div class="">
+										<input type="number" min="1" max="100" class="form-control" name="" id="background-opacity" value="100">
+									</div>
 								</div>
+								<div class="form-group col-md-3" title="Flip Background">
+									<label class="control-label text-right">Flip:</label>
+									<div class="">
+										<button type="button"  class="background-vertical-flip btn btn-default btn-sm">H-Flip&nbsp;&nbsp;<i class="fa fa-arrows-h" aria-hidden="true"></i></button>
+										<button type="button"  class="background-horizontal-flip btn btn-default btn-sm">V-Flip&nbsp;&nbsp;<i class="fa fa-arrows-v" aria-hidden="true"></i></button>
+									</div>
+								</div>
+								<!-- <div class="form-group col-md-2">
+									<div id="background_message" class="" style="clear:both; color:red; "></div>
+								</div> -->
 							</div>
+		
 							<div style="overflow-y:hidden; overflow-x:auto; clear:both;">
 								<div id="background_thumbs" class="text-left" style="width:;height:110px; "></div> 
 							</div>   

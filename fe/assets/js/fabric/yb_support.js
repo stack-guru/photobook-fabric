@@ -780,6 +780,249 @@ $(document).ready(function () {
 	var otype;
 	var change = false;
 
+	var menuContent = '';
+	menuContent += '<div class="image_menus all_menus panel" id="top_image_menu" style="display:none; width:' + top_image_menu_width + 'px;">';
+	menuContent += '	<div id="top_image_menu_div" class="image_menu_divs">';
+	menuContent += '		<button class="bring_front btn btn-default col-md-2" title="Bring Forward" type="button"><img src="' + img_path + 'bring_front.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="send_back btn btn-default col-md-2" title="Send Backward" type="button"><img src="' + img_path + 'send_back.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="align_horizontal_center btn btn-default col-md-2" title="Align Horizontal Center" type="button"><img src="' + img_path + 'h-align-center.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="align_vertical_center btn btn-default col-md-2" title="Align Vertical Center" type="button"><img src="' + img_path + 'v-align-center.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="crop_mode btn btn-default col-md-2" title="Crop Image" type="button"><img src="' + img_path + 'crop_zoom.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="copy_object copy_image btn btn-default col-md-2" title="Copy Image" type="button"><img src="' + img_path + 'copy.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '	</div>';
+
+	menuContent += '	<div id="zoom_div" class="text-right" style="display:none;">';
+	menuContent += '		<div class="col-md-6" style="padding-left: 0px; padding-right: 0px;">';
+	menuContent += '		<button title="Zoom In" class="btn btn-default crop_btn zoom-in col-md-3 gi-1-5x" type="button"><span class="glyphicon glyphicon-zoom-in"></span></button>';
+	menuContent += '		<button title="Zoom Out" class="btn btn-default crop_btn zoom-out col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><span class="glyphicon glyphicon-zoom-out"></span></button>';
+	menuContent += '		<button title="Move Left" class="btn btn-default crop_btn arrow-left col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><span class="glyphicon glyphicon-circle-arrow-left"></span></button>';
+	menuContent += '		<button title="Move Up" class="btn btn-default crop_btn arrow-up col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>';
+	menuContent += '		</div>';
+	menuContent += '		<div class="col-md-6" style="padding-left: 0px; padding-right: 0px;">';
+	menuContent += '		<button title="Move Down" class="btn btn-default crop_btn arrow-down col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button>';
+	menuContent += '		<button title="Move Right" class="btn btn-default crop_btn arrow-right col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><span class="glyphicon glyphicon-circle-arrow-right"></span></button>';
+	menuContent += '		<button title="Set Crop" disabled class="btn btn-default set_crop col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><i class="fa fa-crop"></i></button>';
+	menuContent += '		<button title="Crop" disabled class="btn btn-default crop_now col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button" style="font-size:15px;">OK</button>';
+	menuContent += '		</div>';
+	menuContent += '		<button title="Exit Crop Mode" style="width:100%" class="btn btn-default exit_crop_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Crop Mode</span></button>';
+	menuContent += '	</div>';
+	menuContent += '</div>';
+
+	// menuContent += '<div class="image_menus panel all_menus image_menu_divs" id="bot_image_menu" style="display:none; width:' + bot_image_menu_width + 'px;" >';
+	menuContent += '<div class="image_menus panel all_menus image_menu_divs" id="bot_image_menu" style="display:none; width:' + top_image_menu_width + 'px;" >';
+	menuContent += '	<div id="bottom_image_menu_div" class="image_menu_divs" >';
+	menuContent += '		<button class="brightcon_image_btn btn btn-default " title="Adjust Brightness/Contrast" type="button"><img src="' + img_path + 'brightness_contrast.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="opacity_image_btn btn btn-default " title="Adjust Opacity" type="button"><img src="' + img_path + 'opacity.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="grayscale_image_btn btn btn-default " title="Grayscale" type="button"><img src="' + img_path + 'grayscale.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="border_image_btn btn btn-default " title="Border" type="button"><img src="' + img_path + 'border.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="shadow_image_btn btn btn-default " title="Shadow" type="button"><img src="' + img_path + 'shadow.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="flip_image_btn btn btn-default " title="Flip" type="button"><img src="' + img_path + 'flip.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button class="delete_btn btn btn-default " title="Delete" type="button"><img src="' + img_path + 'trash.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '	</div>';
+
+	//These are the filters below.
+	//border filter.		
+	menuContent += '	<div id="border_image_div" class="" style="display:none;">';
+	menuContent += '		<div class="panel panel-default">';
+	menuContent += '			<div class="panel-body form-horizontal">';
+
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label for="border_image_status" class="col-md-7 control-label small">Border:</label>';
+	menuContent += '					<div class="col-md-5">';
+	menuContent += '						<select class="form-control small" id="border_image_status" ><option value="OFF">OFF</option><option value="ON">ON</option></select>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label for="border_image_size" class="col-md-7 text-left control-label small">Size:</label>';
+	menuContent += '					<div class="col-md-5">';
+	menuContent += '						<select class="form-control small" id="border_image_size" >';
+	for (var i = 1; i <= 100; i++) {
+		menuContent += '							<option value="' + i + '">' + i + '</option>';
+	}
+	menuContent += '						</select>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label for="border_image_colorpicker" class="col-md-8 text-left control-label small">Color:</label>';
+	menuContent += '					<div class="col-md-4">';
+	menuContent += '						<input id="border_image_colorpicker" class="colorpicker"/>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	// menuContent += '				<div class="form-group">';
+	// menuContent += '					<label for="border_image_corners" class="col-md-6 text-left control-label small">Corners:</label>';
+	// menuContent += '					<div class="col-md-6">';
+	// menuContent += '						<select class="form-control small" id="border_image_corners" >';
+	// menuContent += '							<option value="miter">Sharp</option><option value="round">Rounded</option>';
+	// menuContent += '						</select>';
+	// menuContent += '					</div>';
+	// menuContent += '				</div>';
+
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label for="border_image_line_style" class="col-md-6 text-left control-label small">Line Style:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<select class="form-control small" id="border_image_line_style" >';
+	menuContent += '							<option value="solid">Solid</option><option value="dashed">Dashed</option>';
+	menuContent += '						</select>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label for="border_image_frame_style" class="col-md-6 text-left control-label small">Frame Style:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<select class="form-control small" id="border_image_frame_style" >';
+	menuContent += '							<option value="square">Square</option><option value="round">Round</option><option value="oval">Oval</option>';
+	menuContent += '						</select>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group image_frame image_frame_round" style="display:none;">';
+	menuContent += '					<label id="border_image_frame_radius_text" for="border_image_frame_radius" class="col-md-6 control-label small">Radius:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="border_image_frame_radius" class="image_frame_option" type="range" max="100" min="10" step="5" value="30">';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group image_frame" style="display:none;">';
+	menuContent += '					<label id="border_image_frame_radius_offsetx_text" for="border_image_frame_radius_offsetx" class="col-md-6 control-label small">Offset-X:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="border_image_frame_radius_offsetx" class="image_frame_option" type="range" max="100" min="-100" step="5" value="0">';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group image_frame" style="display:none;">';
+	menuContent += '					<label id="border_image_frame_radius_offsety_text" for="border_image_frame_radius_offsety" class="col-md-6 control-label small">Offset-Y:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="border_image_frame_radius_offsety" class="image_frame_option" type="range" max="100" min="-100" step="5" value="0">';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group image_frame image_frame_oval" style="display:none;">';
+	menuContent += '					<label id="border_image_frame_radius_width_text" for="border_image_frame_radius_width" class="col-md-6 control-label small">Width:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="border_image_frame_radius_width" class="image_frame_option" type="range" max="100" min="10" step="5" value="100">';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group image_frame image_frame_oval" style="display:none;">';
+	menuContent += '					<label id="border_image_frame_radius_height_text" for="border_image_frame_radius_height" class="col-md-6 control-label small">Height:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="border_image_frame_radius_height" class="image_frame_option" type="range" max="100" min="10" step="5" value="100">';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group border_image_radius_frame">';
+	menuContent += '					<label for="border_image_radius" class="col-md-6 text-left control-label small">Border Radius:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="border_image_radius" class="form-control" type="number" max="100" min="1" value="0" step="1" value="5">';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '			</div>';
+	menuContent += '		</div>';
+	menuContent += '		<button title="Exit Border Mode" style="width:100%" class="btn btn-default exit_image_border_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Border Mode</span></button>';
+	menuContent += '	</div>';
+
+	//shadow filter
+	menuContent += '	<div id="shadow_image_div" class="" style="display:none;">';
+	menuContent += '		<div class="panel panel-default">';
+	menuContent += '			<div class="panel-body form-horizontal">';
+
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label for="shadow_image_status" class="col-md-7 control-label small">Shadow:</label>';
+	menuContent += '					<div class="col-md-5">';
+	menuContent += '						<select class="form-control small shadow_image" id="shadow_image_status" ><option value="OFF">OFF</option><option value="ON">ON</option></select>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label id="shadow_image_blur_text" for="shadow_image_blur" class="col-md-6 text-left control-label small">Blur:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="shadow_image_blur" class="shadow_image" type="range" max="50" min="0" step="2" value="10">';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label id="shadow_image_offsetx_text" for="shadow_image_offsetx" class="col-md-6 text-left control-label small">Offset-X:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="shadow_image_offsetx" class="shadow_image" type="range" max="50" min="-50" step="2" value="10">';
+	menuContent += '						</select>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label id="shadow_image_offsety_text" for="shadow_image_offsety" class="col-md-6 text-left control-label small">Offset-Y:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="shadow_image_offsety" class="shadow_image" type="range" max="50" min="-50" step="2" value="10">';
+	menuContent += '						</select>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label for="shadow_image_colorpicker" class="col-md-8 text-left control-label small">Color:</label>';
+	menuContent += '					<div class="col-md-4">';
+	menuContent += '						<input class="shadow_image colorpicker" id="shadow_image_colorpicker"/>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+
+
+	menuContent += '			</div>';
+	menuContent += '		</div>';
+	menuContent += '		<button title="Exit Shadow Mode" style="width:100%" class="btn btn-default exit_image_shadow_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Shadow Mode</span></button>';
+	menuContent += '	</div>';
+
+	//grayscale filter
+	menuContent += '	<div id="grayscale_image_div" class="" style="display:none;">';
+	menuContent += '		<div class="panel panel-default">';
+	menuContent += '			<div class="panel-body form-horizontal">';
+
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label for="grayscale_image_status" class="col-md-7 control-label small">Grayscale:</label>';
+	menuContent += '					<div class="col-md-5">';
+	menuContent += '						<select class="form-control small grayscale_image" id="grayscale_image_status" ><option value="OFF">OFF</option><option value="ON">ON</option></select>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+
+	menuContent += '			</div>';
+	menuContent += '		</div>';
+	menuContent += '		<button title="Exit Grayscale Mode" style="width:100%" class="btn btn-default exit_image_grayscale_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Grayscale Mode</span></button>';
+	menuContent += '	</div>';
+
+	//opacity filter
+	menuContent += '	<div id="opacity_image_div" class="" style="display:none;">';
+	menuContent += '		<div class="panel panel-default">';
+	menuContent += '			<div class="panel-body form-horizontal">';
+
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label id="opacity_image_value_text" for="opacity_image_value" class="col-md-7 text-left control-label small">Opacity:</label>';
+	menuContent += '					<div class="col-md-5">';
+	menuContent += '						<input id="opacity_image_value" type="range" min="0" max="100" step="5" value="100">';
+	menuContent += '						</select>';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+
+	menuContent += '			</div>';
+	menuContent += '		</div>';
+	menuContent += '		<button title="Exit Opacity Mode" style="width:100%" id="exit_image_opacity_mode" class="btn btn-default" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Opacity Mode</span></button>';
+	menuContent += '	</div>';
+
+	//brightness contrast filter
+	menuContent += '	<div id="brightcon_image_div" class="" style="display:none;">';
+	menuContent += '		<div class="panel panel-default">';
+	menuContent += '			<div class="panel-body form-horizontal">';
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label id="brightness_image_value_text" for="brightness_image_value" class="col-md-6 text-left control-label small">Brightness:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="brightness_image_value" type="range" max="100" min="-100" step="5" value="0">';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+	menuContent += '				<div class="form-group">';
+	menuContent += '					<label id="contrast_image_value_text" for="contrast_image_value" class="col-md-6 text-left control-label small">Contrast:</label>';
+	menuContent += '					<div class="col-md-6">';
+	menuContent += '						<input id="contrast_image_value" type="range" min="-100" max="100" step="5" value="0">';
+	menuContent += '					</div>';
+	menuContent += '				</div>';
+
+	menuContent += '			</div>';
+	menuContent += '		</div>';
+	menuContent += '		<button title="Exit Brightness-Contrast Mode" style="width:100%" class="btn btn-default exit_image_brightcon_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Brightness-Contrast Mode</span></button>';
+	menuContent += '	</div>';
+
+	//flip image menu
+	menuContent += '	<div id="flip_image_div" class="" style="display:none;">';
+	menuContent += '		<button title="Flip horizontally" class="v-flip-image btn btn-default col-md-6"><img src="' + img_path + 'flip-h.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button title="Flip vertically" class="h-flip-image btn btn-default col-md-6"><img src="' + img_path + 'flip-v.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
+	menuContent += '		<button title="Exit Flip Mode" style="width:100%" class="btn btn-default exit_flip_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Flip Mode</span></button>';
+	menuContent += '	</div>';
+	menuContent += '</div>';
+
 	function objectSelected(obj) {
 		var id = canvas.getObjects().indexOf(obj);
 		var add = false;
@@ -800,241 +1043,7 @@ $(document).ready(function () {
 				//obj.set('replaced',false);
 
 				$(".all_menus").remove();
-				var h = '';
-				h += '<div class="image_menus all_menus panel" id="top_image_menu" style="display:none; width:' + top_image_menu_width + 'px;">';
-				h += '	<div id="top_image_menu_div" class="image_menu_divs">';
-				h += '		<button class="bring_front btn btn-default col-md-2" title="Bring Forward" type="button"><img src="' + img_path + 'bring_front.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="send_back btn btn-default col-md-2" title="Send Backward" type="button"><img src="' + img_path + 'send_back.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="align_horizontal_center btn btn-default col-md-2" title="Align Horizontal Center" type="button"><img src="' + img_path + 'h-align-center.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="align_vertical_center btn btn-default col-md-2" title="Align Vertical Center" type="button"><img src="' + img_path + 'v-align-center.svg" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="crop_mode btn btn-default col-md-2" title="Crop Image" type="button"><img src="' + img_path + 'crop_zoom.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="copy_object copy_image btn btn-default col-md-2" title="Copy Image" type="button"><img src="' + img_path + 'copy.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '	</div>';
-
-				h += '	<div id="zoom_div" class="text-right" style="display:none;">';
-				h += '		<div class="col-md-6" style="padding-left: 0px; padding-right: 0px;">';
-				h += '		<button title="Zoom In" class="btn btn-default crop_btn zoom-in col-md-3 gi-1-5x" type="button"><span class="glyphicon glyphicon-zoom-in"></span></button>';
-				h += '		<button title="Zoom Out" class="btn btn-default crop_btn zoom-out col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><span class="glyphicon glyphicon-zoom-out"></span></button>';
-				h += '		<button title="Move Left" class="btn btn-default crop_btn arrow-left col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><span class="glyphicon glyphicon-circle-arrow-left"></span></button>';
-				h += '		<button title="Move Up" class="btn btn-default crop_btn arrow-up col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>';
-				h += '		</div>';
-				h += '		<div class="col-md-6" style="padding-left: 0px; padding-right: 0px;">';
-				h += '		<button title="Move Down" class="btn btn-default crop_btn arrow-down col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button>';
-				h += '		<button title="Move Right" class="btn btn-default crop_btn arrow-right col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><span class="glyphicon glyphicon-circle-arrow-right"></span></button>';
-				h += '		<button title="Set Crop" disabled class="btn btn-default set_crop col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button"><i class="fa fa-crop"></i></button>';
-				h += '		<button title="Crop" disabled class="btn btn-default crop_now col-md-3 gi-1-5x 1inline-block-left-space-fix" type="button" style="font-size:15px;">OK</button>';
-				h += '		</div>';
-				h += '		<button title="Exit Crop Mode" style="width:100%" class="btn btn-default exit_crop_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Crop Mode</span></button>';
-				h += '	</div>';
-				h += '</div>';
-
-				h += '<div class="image_menus panel all_menus image_menu_divs" id="bot_image_menu" style="display:none; width:' + bot_image_menu_width + 'px;" >';
-				h += '	<div id="bottom_image_menu_div" class="image_menu_divs" >';
-				h += '		<button class="brightcon_image_btn btn btn-default col-md-2" title="Adjust Brightness/Contrast" type="button"><img src="' + img_path + 'brightness_contrast.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="opacity_image_btn btn btn-default col-md-2" title="Adjust Opacity" type="button"><img src="' + img_path + 'opacity.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="grayscale_image_btn btn btn-default col-md-2" title="Grayscale" type="button"><img src="' + img_path + 'grayscale.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="border_image_btn btn btn-default col-md-2" title="Border" type="button"><img src="' + img_path + 'border.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="shadow_image_btn btn btn-default col-md-2" title="Shadow" type="button"><img src="' + img_path + 'shadow.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '		<button class="delete_btn btn btn-default col-md-2" title="Delete" type="button"><img src="' + img_path + 'trash.png" width="' + icon_width + '" height="' + icon_width + '" alt=""/></button>';
-				h += '	</div>';
-
-				//These are the filters below.
-				//border filter.		
-				h += '	<div id="border_image_div" class="" style="display:none;">';
-				h += '		<div class="panel panel-default">';
-				h += '			<div class="panel-body form-horizontal">';
-
-				h += '				<div class="form-group">';
-				h += '					<label for="border_image_status" class="col-md-7 control-label small">Border:</label>';
-				h += '					<div class="col-md-5">';
-				h += '						<select class="form-control small" id="border_image_status" ><option value="OFF">OFF</option><option value="ON">ON</option></select>';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group">';
-				h += '					<label for="border_image_size" class="col-md-7 text-left control-label small">Size:</label>';
-				h += '					<div class="col-md-5">';
-				h += '						<select class="form-control small" id="border_image_size" >';
-				for (var i = 1; i <= 100; i++) {
-					h += '							<option value="' + i + '">' + i + '</option>';
-				}
-				h += '						</select>';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group">';
-				h += '					<label for="border_image_colorpicker" class="col-md-8 text-left control-label small">Color:</label>';
-				h += '					<div class="col-md-4">';
-				h += '						<input id="border_image_colorpicker" class="colorpicker"/>';
-				h += '					</div>';
-				h += '				</div>';
-				// h += '				<div class="form-group">';
-				// h += '					<label for="border_image_corners" class="col-md-6 text-left control-label small">Corners:</label>';
-				// h += '					<div class="col-md-6">';
-				// h += '						<select class="form-control small" id="border_image_corners" >';
-				// h += '							<option value="miter">Sharp</option><option value="round">Rounded</option>';
-				// h += '						</select>';
-				// h += '					</div>';
-				// h += '				</div>';
-
-				h += '				<div class="form-group">';
-				h += '					<label for="border_image_line_style" class="col-md-6 text-left control-label small">Line Style:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<select class="form-control small" id="border_image_line_style" >';
-				h += '							<option value="solid">Solid</option><option value="dashed">Dashed</option>';
-				h += '						</select>';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group">';
-				h += '					<label for="border_image_frame_style" class="col-md-6 text-left control-label small">Frame Style:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<select class="form-control small" id="border_image_frame_style" >';
-				h += '							<option value="square">Square</option><option value="round">Round</option><option value="oval">Oval</option>';
-				h += '						</select>';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group image_frame image_frame_round" style="display:none;">';
-				h += '					<label id="border_image_frame_radius_text" for="border_image_frame_radius" class="col-md-6 control-label small">Radius:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="border_image_frame_radius" class="image_frame_option" type="range" max="100" min="10" step="5" value="30">';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group image_frame" style="display:none;">';
-				h += '					<label id="border_image_frame_radius_offsetx_text" for="border_image_frame_radius_offsetx" class="col-md-6 control-label small">Offset-X:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="border_image_frame_radius_offsetx" class="image_frame_option" type="range" max="100" min="-100" step="5" value="0">';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group image_frame" style="display:none;">';
-				h += '					<label id="border_image_frame_radius_offsety_text" for="border_image_frame_radius_offsety" class="col-md-6 control-label small">Offset-Y:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="border_image_frame_radius_offsety" class="image_frame_option" type="range" max="100" min="-100" step="5" value="0">';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group image_frame image_frame_oval" style="display:none;">';
-				h += '					<label id="border_image_frame_radius_width_text" for="border_image_frame_radius_width" class="col-md-6 control-label small">Width:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="border_image_frame_radius_width" class="image_frame_option" type="range" max="100" min="10" step="5" value="100">';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group image_frame image_frame_oval" style="display:none;">';
-				h += '					<label id="border_image_frame_radius_height_text" for="border_image_frame_radius_height" class="col-md-6 control-label small">Height:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="border_image_frame_radius_height" class="image_frame_option" type="range" max="100" min="10" step="5" value="100">';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group border_image_radius_frame">';
-				h += '					<label for="border_image_radius" class="col-md-6 text-left control-label small">Border Radius:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="border_image_radius" class="form-control" type="number" max="100" min="1" value="0" step="1" value="5">';
-				h += '					</div>';
-				h += '				</div>';
-				h += '			</div>';
-				h += '		</div>';
-				h += '		<button title="Exit Border Mode" style="width:100%" class="btn btn-default exit_image_border_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Border Mode</span></button>';
-				h += '	</div>';
-
-				//shadow filter
-				h += '	<div id="shadow_image_div" class="" style="display:none;">';
-				h += '		<div class="panel panel-default">';
-				h += '			<div class="panel-body form-horizontal">';
-
-				h += '				<div class="form-group">';
-				h += '					<label for="shadow_image_status" class="col-md-7 control-label small">Shadow:</label>';
-				h += '					<div class="col-md-5">';
-				h += '						<select class="form-control small shadow_image" id="shadow_image_status" ><option value="OFF">OFF</option><option value="ON">ON</option></select>';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group">';
-				h += '					<label id="shadow_image_blur_text" for="shadow_image_blur" class="col-md-6 text-left control-label small">Blur:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="shadow_image_blur" class="shadow_image" type="range" max="50" min="0" step="2" value="10">';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group">';
-				h += '					<label id="shadow_image_offsetx_text" for="shadow_image_offsetx" class="col-md-6 text-left control-label small">Offset-X:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="shadow_image_offsetx" class="shadow_image" type="range" max="50" min="-50" step="2" value="10">';
-				h += '						</select>';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group">';
-				h += '					<label id="shadow_image_offsety_text" for="shadow_image_offsety" class="col-md-6 text-left control-label small">Offset-Y:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="shadow_image_offsety" class="shadow_image" type="range" max="50" min="-50" step="2" value="10">';
-				h += '						</select>';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group">';
-				h += '					<label for="shadow_image_colorpicker" class="col-md-8 text-left control-label small">Color:</label>';
-				h += '					<div class="col-md-4">';
-				h += '						<input class="shadow_image colorpicker" id="shadow_image_colorpicker"/>';
-				h += '					</div>';
-				h += '				</div>';
-
-
-				h += '			</div>';
-				h += '		</div>';
-				h += '		<button title="Exit Shadow Mode" style="width:100%" class="btn btn-default exit_image_shadow_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Shadow Mode</span></button>';
-				h += '	</div>';
-
-				//grayscale filter
-				h += '	<div id="grayscale_image_div" class="" style="display:none;">';
-				h += '		<div class="panel panel-default">';
-				h += '			<div class="panel-body form-horizontal">';
-
-				h += '				<div class="form-group">';
-				h += '					<label for="grayscale_image_status" class="col-md-7 control-label small">Grayscale:</label>';
-				h += '					<div class="col-md-5">';
-				h += '						<select class="form-control small grayscale_image" id="grayscale_image_status" ><option value="OFF">OFF</option><option value="ON">ON</option></select>';
-				h += '					</div>';
-				h += '				</div>';
-
-				h += '			</div>';
-				h += '		</div>';
-				h += '		<button title="Exit Grayscale Mode" style="width:100%" class="btn btn-default exit_image_grayscale_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Grayscale Mode</span></button>';
-				h += '	</div>';
-
-				//opacity filter
-				h += '	<div id="opacity_image_div" class="" style="display:none;">';
-				h += '		<div class="panel panel-default">';
-				h += '			<div class="panel-body form-horizontal">';
-
-				h += '				<div class="form-group">';
-				h += '					<label id="opacity_image_value_text" for="opacity_image_value" class="col-md-7 text-left control-label small">Opacity:</label>';
-				h += '					<div class="col-md-5">';
-				h += '						<input id="opacity_image_value" type="range" min="0" max="100" step="5" value="100">';
-				h += '						</select>';
-				h += '					</div>';
-				h += '				</div>';
-
-				h += '			</div>';
-				h += '		</div>';
-				h += '		<button title="Exit Opacity Mode" style="width:100%" id="exit_image_opacity_mode" class="btn btn-default" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Opacity Mode</span></button>';
-				h += '	</div>';
-
-				//brightness contrast filter
-				h += '	<div id="brightcon_image_div" class="" style="display:none;">';
-				h += '		<div class="panel panel-default">';
-				h += '			<div class="panel-body form-horizontal">';
-				h += '				<div class="form-group">';
-				h += '					<label id="brightness_image_value_text" for="brightness_image_value" class="col-md-6 text-left control-label small">Brightness:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="brightness_image_value" type="range" max="100" min="-100" step="5" value="0">';
-				h += '					</div>';
-				h += '				</div>';
-				h += '				<div class="form-group">';
-				h += '					<label id="contrast_image_value_text" for="contrast_image_value" class="col-md-6 text-left control-label small">Contrast:</label>';
-				h += '					<div class="col-md-6">';
-				h += '						<input id="contrast_image_value" type="range" min="-100" max="100" step="5" value="0">';
-				h += '					</div>';
-				h += '				</div>';
-
-				h += '			</div>';
-				h += '		</div>';
-				h += '		<button title="Exit Brightness-Contrast Mode" style="width:100%" class="btn btn-default exit_image_brightcon_mode" type="button"><span style="font-size: 70%; font-weight:bold;">Exit Brightness-Contrast Mode</span></button>';
-				h += '	</div>';
-
-				h += '</div>';
-
+				var h = menuContent;
 				add = true;
 
 				//$('#canvas_div').append(h);		
@@ -1043,7 +1052,6 @@ $(document).ready(function () {
 
 				//adjust_menu(obj);
 				//$(".image_menus").show(); 
-
 			}
 		}
 		else if (otype == 'Textbox') {
@@ -1269,26 +1277,82 @@ $(document).ready(function () {
 		}
 
 		if (add) {
-
 			obj.set('replaced', false);
 
 			$('#canvas_div').append(h);
 
 			addPicker();
 
-			setTimeout(function () {
-				adjust_menu(obj);
-				$(".text_menus").show();
-				loadMenuValues(obj);
-				redo_undo_action = false;
-			}, 50);
+			adjust_menu(obj);
+			$(".text_menus").show();
+			loadMenuValues(obj);
+			redo_undo_action = false;
+
+			if (otype === 'CzImage' && obj.primarySrc.indexOf("placeholder") != -1) {
+				$(".flip_image_btn").attr("disabled", true);
+			}
 
 		}
 		cur_id = id;
 	}
 
-	const selectionOccured = obj => {
-		obj.selected.length === 1 && objectSelected(obj.selected[0])
+	function createObjectsMenu() {
+		$(".all_menus").remove();
+
+		const active = canvas.getActiveObject()
+		let newGroup = active.toGroup();
+		var left = newGroup.left;
+		var top = newGroup.top;
+		var width = newGroup.width;
+		var height = newGroup.height;
+
+		canvas.getActiveObject().toActiveSelection();
+
+		$('#canvas_div').append(menuContent);
+
+		bot_image_menu_left = left;
+		if (width < bot_image_menu_width)
+			bot_image_menu_left = left - (bot_image_menu_width - width) / 2;
+		else if (width > bot_image_menu_width)
+			bot_image_menu_left = left + (width - bot_image_menu_width) / 2;
+
+		top_image_menu_left = left;
+		if (width < top_image_menu_left)
+			top_image_menu_left = left - (top_image_menu_width - width) / 2;
+		else if (width > top_image_menu_left)
+			top_image_menu_left = left + (width - top_image_menu_width) / 2;
+
+		$("#top_image_menu").css(
+			{
+				position: "absolute",
+				top: (top - menu_height - top_image_menu_offset) + "px",
+				left: top_image_menu_left + "px"
+			});
+
+		$("#bot_image_menu").css(
+			{
+				position: "absolute",
+				top: (top + height + menu_offset) + "px",
+				left: top_image_menu_left + "px"
+			});
+
+		$(".image_menus").show();
+
+		addPicker();
+		$(".crop_mode").attr("disabled", true);
+		$(".border_image_btn").attr("disabled", true);
+	}
+
+	var selectionType = ''	
+	const selectionOccured = () => {
+		let objs = canvas.getActiveObjects()
+		if (objs.length === 1) {
+			selectionType = 'single'
+			objectSelected(objs[0])
+		} else {
+			selectionType = 'multi'
+			createObjectsMenu()
+		}
 	}
 
 	canvas.on({
@@ -1451,8 +1515,10 @@ $(document).ready(function () {
 	});
 
 	canvas.on('object:modified', function (e) {
-		var obj = canvas.getActiveObject();
-		adjust_menu(obj);
+		if (e.target && e.target._objects && e.target._objects.length === 1)
+			adjust_menu(canvas.getActiveObject());
+		else if (e.target && e.target._objects && e.target._objects.length > 1)
+			createObjectsMenu()
 		dirty = true;
 		saveState();
 	});
@@ -1494,7 +1560,8 @@ $(document).ready(function () {
 				{
 					position: "absolute",
 					top: (top + height + menu_offset) + "px",
-					left: bot_image_menu_left + "px"
+					// left: bot_image_menu_left + "px"
+					left: top_image_menu_left + "px"
 				});
 
 			$(".image_menus").show();
@@ -1569,9 +1636,10 @@ $(document).ready(function () {
 	canvas.on('mouse:up', function (e) {
 		$(".all_menus").show()
 
-		if (!cropping && (e.target && e.target.type))
+		if (e.target && e.target._objects && e.target._objects.length > 1)
+			createObjectsMenu()
+		else if (!cropping && (e.target && e.target.type) && selectionType === 'single')
 			adjust_menu(e.target);
-
 	});
 
 	canvas.on('object:moving', function (e) {
@@ -1840,15 +1908,19 @@ $(document).ready(function () {
 
 	$('#canvas_div').on('click', ".delete_btn", function (e) {
 		if (!confirm("Are you sure you want to remove this?")) return false;
-		var obj = canvas.getActiveObject();
-		theRemovedObject = obj;
-		canvas.remove(obj);
-		//update green check on image.
-		updateGreenMark('remove', theRemovedObject);
-		$(".all_menus").remove();
-		dirty = true;
-		removedObject = true;
-		saveState();
+
+		var objs = canvas.getActiveObjects();
+		objs.forEach(obj => {
+			theRemovedObject = obj;
+			canvas.remove(obj);
+			//update green check on image.
+			updateGreenMark('remove', theRemovedObject);
+			$(".all_menus").remove();
+			dirty = true;
+			removedObject = true;
+			saveState();
+		})
+		canvas.discardActiveObject()
 	});
 
 	var sendObjectBack = sendObjectFront = false;
@@ -1858,7 +1930,7 @@ $(document).ready(function () {
 		var obj = canvas.getActiveObject();
 		var id = canvas.getObjects().indexOf(obj) - 1;
 		var _obj = canvas._objects[id];
-		if (_obj.bottom == true)
+		if (_obj.bottom && _obj.bottom == true)
 			return false;
 
 		canvas.getActiveObject().sendBackwards();
@@ -1962,21 +2034,28 @@ $(document).ready(function () {
 	});
 
 	// align single item center
-	$("#canvas_div").on('click', ".align_horizontal_center", function(e) {
+	$("#canvas_div").on('click', ".align_horizontal_center", function (e) {
 		let obj = canvas.getActiveObject()
-		if (obj.type === "Textbox")
-			obj.left = canvas.width / 2
-		else
-			obj.left = canvas.width / 2 - obj.width / 2
+		const pt = new fabric.Point(canvas.width / 2, obj.getCenterPoint().y);
+		obj.setPositionByOrigin(pt, 'center', 'center');
 		canvas.renderAll()
-		$(".all_menus").hide();
+		if (obj.type === "activeSelection") {
+			createObjectsMenu();
+		} else {
+			adjust_menu(obj);
+		}
 	});
 
-	$("#canvas_div").on('click', ".align_vertical_center", function(e) {
+	$("#canvas_div").on('click', ".align_vertical_center", function (e) {
 		let obj = canvas.getActiveObject()
-		obj.top = canvas.height / 2 - obj.height / 2
+		const pt = new fabric.Point(obj.getCenterPoint().x, canvas.height / 2);
+		obj.setPositionByOrigin(pt, 'center', 'center');
 		canvas.renderAll()
-		$(".all_menus").hide();
+		if (obj.type === "activeSelection") {
+			createObjectsMenu();
+		} else {
+			adjust_menu(obj);
+		}
 	});
 
 	//prevents window resize trigger
@@ -2150,27 +2229,42 @@ $(document).ready(function () {
 	var clonedObject = false;
 
 	$('#canvas_div').on('click', ".copy_object", function (e) {
-		var clone = fabric.util.object.clone(canvas.getActiveObject());
+		const objs = canvas.getActiveObjects()
 
-		// if ($(this).hasClass("copy_text")) {
-		// 	// clone = fabric.Textbox.fromObject(obj.toObject());
-		// 	clone = fabric.util.object.clone(obj)
-		// }
-		// else if ($(this).hasClass("copy_image"))
-		// 	clone = $.extend(true, {}, obj);
-		// else
-		// 	return false;
+		if (objs.length === 1) {
+			let clone = fabric.util.object.clone(objs[0]);
 
-		clone.set({
-			top: clone.get('top') + (50 * globalScale),
-			left: clone.get('left') + (50 * globalScale),
-			itemID: itemID++
-		});
+			clone.set({
+				top: clone.get('top') + 50 * globalScale,
+				left: clone.get('left') + 50 * globalScale,
+				itemID: itemID++
+			});
 
-		canvas.add(clone).setActiveObject(clone);
-		dirty = true;
-		clonedObject = true;
-		saveState();
+			canvas.add(clone);
+			dirty = true;
+			clonedObject = true;
+			saveState();
+		} else {
+			objs.forEach(obj => {
+				canvas.setActiveObject(obj)
+				let clone = fabric.util.object.clone(obj);
+				clone.set({
+					top: obj.top + 50 * globalScale,
+					left: obj.left + 50 * globalScale,
+					itemID: itemID++
+				});
+	
+				canvas.add(clone);
+				dirty = true;
+				clonedObject = true;
+				saveState();
+			})
+			$(".all_menus").remove()
+			
+			var sel = new fabric.ActiveSelection(objs, {canvas: canvas,});
+			canvas.setActiveObject(sel);
+			canvas.requestRenderAll();
+		}
 	});
 
 	//Brightness-Contrast filter
@@ -2181,13 +2275,38 @@ $(document).ready(function () {
 
 	});
 
+	// flip image menu
+	$('#canvas_div').on('click', ".flip_image_btn", function (e) {
+		$("#flip_image_div").show();
+		$("#bottom_image_menu_div").hide();
+		$("#top_image_menu").css("visibility", "hidden");
+	});
+
+	$('#canvas_div').on('click', ".v-flip-image", function (e) {
+		let obj = canvas.getActiveObject()
+		obj.set('flipX', !obj.flipX)
+		canvas.renderAll()
+	})
+
+	$('#canvas_div').on('click', ".h-flip-image", function (e) {
+		let obj = canvas.getActiveObject()
+		obj.set('flipY', !obj.flipY)
+		canvas.renderAll()
+	})
+
+	$("#canvas_div").on('click', ".exit_flip_mode", function (e) {
+		$("#flip_image_div").hide();
+		$("#bottom_image_menu_div").show();
+		$("#top_image_menu").css("visibility", "");
+	})
+
 	//var filters = ['grayscale','brightness','contrast'];
 
 	function findFilter(obj, filter) //search for the filter we need. Cant think of any other way to do this.
 	{
 		var index = null;
 
-		if (obj.filters.length > 0) {
+		if (obj.filters && obj.filters.length > 0) {
 			$.each(obj.filters, function (k, v) {
 				if (v && v.type.toLowerCase() == filter.toLowerCase()) {
 					index = k;
@@ -2198,51 +2317,68 @@ $(document).ready(function () {
 		return index;
 	}
 
-
 	$('#canvas_div').on('change', "#brightness_image_value", function (e) {
-		var obj = canvas.getActiveObject();
+		var objs = canvas.getActiveObjects();
 		var b = Number($("#brightness_image_value").val());
+		var images = objs.reduce((prev, cur) => {
+			if (cur.type === 'CzImage')
+				return [...prev, cur]
+			return prev
+		}, [])
+
+		if (!images) return
 
 		updateBrightConValues("brightness", b);
 
-		var x = findFilter(obj, 'Brightness');
-		// var val = Math.round(b * 2.55) / 100;
-		var val = b / 100
+		images.forEach(obj => {
+			var x = findFilter(obj, 'Brightness');
+			// var val = Math.round(b * 2.55) / 100;
+			var val = b / 100
 
-		if (b != 0 && x == null)
-			obj.filters.push(new fabric.Image.filters.Brightness({ brightness: val }));
-		else if (b != 0 && x >= 0)
-			obj.filters[x].brightness = val;
-		else
-			delete obj.filters[x ? x : 0];
+			if (b != 0 && x == null)
+				obj.filters.push(new fabric.Image.filters.Brightness({ brightness: val }));
+			else if (b != 0 && x >= 0)
+				obj.filters[x].brightness = val;
+			else
+				delete obj.filters[x ? x : 0];
 
-		obj.applyFilters();
+			obj.applyFilters();
+			dirty = true;
+			saveState();
+		})
 		canvas.requestRenderAll();
-		dirty = true;
-		saveState();
-
 	});
 
 	$('#canvas_div').on('change', "#contrast_image_value", function (e) {
-		var obj = canvas.getActiveObject();
+		var objs = canvas.getActiveObjects();
 		var b = Number($("#contrast_image_value").val());
+		var images = objs.reduce((prev, cur) => {
+			if (cur.type === 'CzImage')
+				return [...prev, cur]
+			return prev
+		}, [])
+
+		if (!images) return
 
 		updateBrightConValues("contrast", b);
 
-		var x = findFilter(obj, 'Contrast');
-		var val = b / 100;
+		images.forEach(obj => {
+			var x = findFilter(obj, 'Contrast');
+			// var val = Math.round(b * 2.55) / 100;
+			var val = b / 100
 
-		if (b != 0 && x == null)
-			obj.filters.push(new fabric.Image.filters.Contrast({ contrast: val }));
-		else if (b != 0 && x >= 0)
-			obj.filters[x].contrast = val;
-		else
-			delete obj.filters[x ? x : 0];
+			if (b != 0 && x == null)
+				obj.filters.push(new fabric.Image.filters.Contrast({ contrast: val }));
+			else if (b != 0 && x >= 0)
+				obj.filters[x].contrast = val;
+			else
+				delete obj.filters[x ? x : 0];
 
-		obj.applyFilters();
+			obj.applyFilters();
+			dirty = true;
+			saveState();
+		})
 		canvas.requestRenderAll();
-		dirty = true;
-		saveState();
 	});
 
 	$('#canvas_div').on('click', ".exit_image_brightcon_mode", function (e) {
@@ -2280,25 +2416,37 @@ $(document).ready(function () {
 
 
 	$('#canvas_div').on('change', "#opacity_image_value,#opacity_text_value", function (e) {
+		var objs = canvas.getActiveObjects();
 
-		var obj = canvas.getActiveObject();
-		var id = $(this).attr("id");
-		var a;
+		if (objs.length === 1) {
+			var obj = objs[0];
+			var id = $(this).attr("id");
+			var a;
 
-		if (id == "opacity_image_value")
-			a = "image";
-		else if (id == "opacity_text_value")
-			a = "text";
+			if (id == "opacity_image_value")
+				a = "image";
+			else if (id == "opacity_text_value")
+				a = "text";
 
-		var opacity = $("#opacity_" + a + "_value").val();
-		$("#opacity_" + a + "_value_text").html("Opacity:&nbsp;&nbsp;" + opacity);
+			var opacity = $("#opacity_" + a + "_value").val();
+			$("#opacity_" + a + "_value_text").html("Opacity:&nbsp;&nbsp;" + opacity);
 
-		obj.set("opacity", opacity * .01);
+			obj.set("opacity", opacity * .01);
+
+			dirty = true;
+			saveState();
+		} else if (objs.length > 1) {
+			objs.forEach(obj => {
+				var opacity = $("#opacity_image_value").val();
+				$("#opacity_image_value_text").html("Opacity:&nbsp;&nbsp;" + opacity);
+
+				obj.set("opacity", opacity * .01);
+				dirty = true;
+				saveState();
+			})
+		}
 
 		canvas.renderAll();
-		dirty = true;
-		saveState();
-
 	});
 
 	$('#canvas_div').on('click', "#exit_image_opacity_mode, #exit_text_opacity_mode", function (e) {
@@ -2327,28 +2475,37 @@ $(document).ready(function () {
 	});
 
 	$('#canvas_div').on('change', "#grayscale_image_status", function (e) {
-
+		var objs = canvas.getActiveObjects();
 		var r = $("#grayscale_image_status").val();
-		var obj = canvas.getActiveObject();
+		var images = objs.reduce((prev, cur) => {
+			if (cur.type === 'CzImage')
+				return [...prev, cur]
+			return prev
+		}, [])
 
-		if (!('my' in obj))
-			obj.my = new Object();
+		if (!images) return
 
-		if (r == "ON") {
-			obj.my.hasGrayscale = 'ON';
-			obj.filters.push(new fabric.Image.filters.Grayscale());
-		}
-		else {
-			var x = findFilter(obj, 'Grayscale');
-			obj.my.hasGrayscale = 'OFF';
-			delete obj.filters[x ? x : 0];
-		}
+		images.forEach(obj => {
 
-		obj.applyFilters();
+			if (!('my' in obj))
+				obj.my = new Object();
+
+			if (r == "ON") {
+				if (obj.my.hasGrayscale != "ON") {
+					obj.my.hasGrayscale = 'ON';
+					obj.filters.push(new fabric.Image.filters.Grayscale());
+				}
+			}
+			else {
+				var x = findFilter(obj, 'Grayscale');
+				obj.my.hasGrayscale = 'OFF';
+				delete obj.filters[x ? x : 0];
+			}
+			obj.applyFilters();
+			dirty = true;
+			saveState();
+		})
 		canvas.requestRenderAll();
-		dirty = true;
-		saveState();
-
 	});
 
 	$('#canvas_div').on('click', ".exit_image_grayscale_mode", function (e) {
@@ -2379,33 +2536,62 @@ $(document).ready(function () {
 	});
 
 
-	function updateShadow(_this, a) {
+	function updateShadow(a) {
+		var objs = canvas.getActiveObjects();
 
-		var r = $("#shadow_" + a + "_status").val();
-		var obj = canvas.getActiveObject();
-		var b = new Object();
-		b.blur = Number($("#shadow_" + a + "_blur").val());
-		b.offsetX = Number($("#shadow_" + a + "_offsetx").val());
-		b.offsetY = Number($("#shadow_" + a + "_offsety").val());
+		// if ((r == "round" || r == "oval") && b == "ON")
+		if (objs.length === 1) {
+			var obj = objs[0]
+			var r = $("#shadow_" + a + "_status").val();
+			var b = new Object();
+			b.blur = Number($("#shadow_" + a + "_blur").val());
+			b.offsetX = Number($("#shadow_" + a + "_offsetx").val());
+			b.offsetY = Number($("#shadow_" + a + "_offsety").val());
 
-		updateShadowValues(a, b);
+			updateShadowValues(a, b);
 
-		if (r == "ON") {
-			var shadow = {
-				color: $("#shadow_" + a + "_colorpicker").spectrum("get").toRgbString(),
-				blur: b.blur,
-				offsetX: b.offsetX,
-				offsetY: b.offsetY,
-				affectStroke: false
+			if (r == "ON") {
+				var shadow = {
+					color: $("#shadow_" + a + "_colorpicker").spectrum("get").toRgbString(),
+					blur: b.blur,
+					offsetX: b.offsetX,
+					offsetY: b.offsetY,
+					affectStroke: false
+				}
 			}
+			else
+				var shadow = null;
+
+			obj.shadow = shadow;
+		} else if (objs.length > 2) {
+			objs.forEach(obj => {
+				if (obj.type === 'CzImage' && (obj.my.frame_style === 'oval' || obj.my.frame_style === 'round'))
+					return
+
+				var r = $("#shadow_image_status").val();
+				var b = new Object();
+				b.blur = Number($("#shadow_image_blur").val());
+				b.offsetX = Number($("#shadow_image_offsetx").val());
+				b.offsetY = Number($("#shadow_image_offsety").val());
+
+				updateShadowValues(a, b);
+
+				if (r == "ON") {
+					var shadow = {
+						color: $("#shadow_image_colorpicker").spectrum("get").toRgbString(),
+						blur: b.blur,
+						offsetX: b.offsetX,
+						offsetY: b.offsetY,
+						affectStroke: false
+					}
+				}
+				else
+					var shadow = null;
+
+				obj.shadow = shadow;
+			})
 		}
-		else
-			var shadow = null;
-
-		obj.shadow = shadow;
-		// obj.hasBorders = false;
 		canvas.renderAll();
-
 	}
 
 	$('#canvas_div').on('change', ".shadow_image, .shadow_text", function (e) {
@@ -2416,7 +2602,7 @@ $(document).ready(function () {
 		else if ($(this).hasClass("shadow_text"))
 			a = "text";
 
-		updateShadow($(this), a);
+		updateShadow(a);
 		dirty = true;
 		saveState();
 
@@ -2816,7 +3002,6 @@ $(document).ready(function () {
 	$('#canvas_div').on('change', ".image_frame_option,#border_image_frame_style", function (e) {
 		var r = $("#border_image_frame_style").val();
 		borderFrameState(r);
-
 		updateImageFrameRadius(true);
 	});
 
@@ -2871,11 +3056,14 @@ $(document).ready(function () {
 		var obj = canvas.getActiveObject();
 		var render = false;
 
+		if (obj.type != 'CzImage') return
+
 		var d = GetFrameValues();
 		UpdateFrameValues(d);
 
 		if (!('my' in obj))
 			obj.my = new Object();
+
 		obj.my.radius = d.radius;
 		obj.my.offsetx = d.offsetx;
 		obj.my.offsety = d.offsety;
@@ -3417,13 +3605,11 @@ $(document).ready(function () {
 				var nh = (document.getElementById(pre + "_" + im_id).naturalHeight);
 				// var nh = (document.getElementById(pre+"_"+im_id).height);
 				var bound = obj.getBoundingRect();
-				console.log(nw, nh);
 				// if(obj.my.corner_radius) {
 				// 	obj.my.corner_radius /= 2;
 				// }
 				var width = obj.width;
 				var height = obj.height;
-				console.log('getroundingrect width, height', width, height, globalScale);
 
 				// if (nw < width && nh < height)
 				// {
@@ -5342,7 +5528,7 @@ $(document).ready(function () {
 			}
 		}
 
-		var title = type == "Clipart" ? data.o_image_name : "Click to use this style";
+		var title = data.id;
 
 		//do we have a matching background by src?
 		var cur_bg = null;

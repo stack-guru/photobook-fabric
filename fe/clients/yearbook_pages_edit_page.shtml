@@ -291,7 +291,7 @@ div.client_border:hover {
 		if (pageData.show_mypage)
 		{
 			$("#show_mypage").val(pageData.ladder_page);
-			$("#show_mypage").text("My Page "+pageData.ladder_page+" Images");
+			$("#show_mypage").text("Page "+pageData.ladder_page+", Images Folder");
 		}
 
 		ybSupportLoad();
@@ -449,7 +449,7 @@ div.client_border:hover {
                             <div class="col-md-3">
                                 <select id="photos_folder" class="form-control">
                                     <option id="show_mypage" value="">Select</option>
-                                    <option value="1000">My General Folder Images</option>
+                                    <option value="1000">General Images Folder</option>
                                     <option value="group">Group Photos</option>
                                 </select> 
                             </div>
@@ -558,7 +558,7 @@ div.client_border:hover {
                         <div class="form-group col-md-1" title="Border Opacity">
                             <label for="border-opacity" class="control-label text-right">Opacity:</label>
                             <div class="">
-                                <input type="number" min="1" max="100" class="form-control" name="" id="border-opacity">
+                                <input type="number" value="100" min="1" max="100" class="form-control" name="" id="border-opacity">
                             </div>
                         </div>
                         <div class="form-group col-md-3" title="Flip Border">
@@ -616,7 +616,7 @@ div.client_border:hover {
                         <div class="form-group col-md-1" title="Background Opacity">
                             <label for="background-opacity" class="control-label text-right">Opacity:</label>
                             <div class="">
-                                <input type="number" min="1" max="100" class="form-control" name="" id="background-opacity">
+                                <input type="number" min="1" max="100" class="form-control" name="" id="background-opacity" value="100">
                             </div>
                         </div>
                         <div class="form-group col-md-3" title="Flip Background">
