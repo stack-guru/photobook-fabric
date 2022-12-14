@@ -1,6 +1,6 @@
 //home page add interaction code
 $(document).ready(function () {
-
+	fabric.devicePixelRatio = 2
 	//CzImage
 	var dirty = false;
 	var itemID = 0; //this will give each object, image/text a unique item for keeping track of the undo redo.
@@ -64,6 +64,8 @@ $(document).ready(function () {
 					// keep it at the current center if we can.
 					this.cx = this.cx + (z / 2);
 					this.cy = this.cy + (z / (this.width / this.height) / 2);
+
+					consol.log('center cx cy = ', this.cx, this.cy)
 				}
 
 				if (!crpd) {
@@ -87,23 +89,24 @@ $(document).ready(function () {
 						this.cy = this.height - this.ch;
 				}
 				else {
-					//if either is too big restore previous values so we don't distort the image.
+					// if either is too big restore previous values so we don't distort the image.
 					if (this.cw > this.origWidth || this.ch > this.origHeight) {
 						//start with this
 						this.cw = orig_cw;
 						this.ch = orig_ch;
 						this.cx = orig_cx;
 						this.cy = orig_cy;
-
 						skipAfterZoom = true;
 					}
 					else {
+
 						if (this.cw < 1)
 							this.cw = 1;
 						if (this.ch < 1)
 							this.ch = 1;
-						if (this.cx > this.origWidth - this.cw)
+						if (this.cx > this.origWidth - this.cw) {
 							this.cx = this.origWidth - this.cw;
+						}
 						if (this.cy > this.origHeight - this.ch)
 							this.cy = this.origHeight - this.ch;
 						if (this.cx < 0)
@@ -227,14 +230,15 @@ $(document).ready(function () {
 						var z = Math.round((this.height - this.origHeight) * (this.width / this.height) + 6);
 
 					//var z = 1; //don't zoom because this image is smaller than the bounding box.
-
 				}
 				else {
 					//get values of crop relative to the image if zoomed or not.
-					this.cx += this.cw * (crop_x / this.width);
-					this.cy += this.ch * (crop_y / this.height);
+					// this.cx += this.cw * (crop_x / this.width);
+					// this.cy += this.ch * (crop_y / this.height);
 					this.cw = this.cw * (crop_width / this.width);
 					this.ch = this.ch * (crop_height / this.height);
+					this.cx = (this.width - this.cw) / 2;
+					this.cy = (this.height - this.ch) / 2;
 
 					this.width = this.cw;
 					this.height = this.ch;
@@ -266,7 +270,7 @@ $(document).ready(function () {
 					_canvas.height = obj.height;
 
 					var ctx = _canvas.getContext('2d');
-					ctx.imageSmoothingEnabled = true;
+					// ctx.imageSmoothingEnabled = false;
 
 					const oWidth = Math.floor(obj.width)
 					const oHeight = Math.floor(obj.height)
@@ -314,7 +318,7 @@ $(document).ready(function () {
 							ctx.stroke();
 						}
 						else { // this.round_border == "Square
-							fabric.Object.drawRoundRect(ctx, obj.my.x, obj.my.y, oWidth, oHeight, obj.my.corner_radius, true);
+							ctx.roundRect(obj.my.x, obj.my.y, oWidth, oHeight, obj.my.corner_radius);
 							ctx.stroke();
 						}
 					}
@@ -401,6 +405,7 @@ $(document).ready(function () {
 		},
 
 		crop: function (obj, plc_obj) {
+
 			if (!obj)
 				var obj = zc.canvas.getActiveObject();
 
@@ -410,10 +415,17 @@ $(document).ready(function () {
 			if (!plc_obj) {
 				obj.crop(
 					function () {
-						//$('.exit_crop_mode').trigger('click');
 						adjust_menu(obj);
 						$("#bot_image_menu").hide();
 						obj.applyFilters();
+
+						if (('clipPath' in obj) && obj.clipPath && ('my' in obj) && obj.my.hasBorder == 'ON' && ('frame_round_border' in obj) && obj.frame_round_border && ('hasBorder' in obj.my)) {
+							zc.frame_round_border(obj.frame_round_border, obj);
+						}
+						else if (('cropX' in obj || 'cropY' in obj) || (obj.cx != 0 || obj.cy != 0 || obj.cw != obj.width || obj.ch != obj.height)) {
+							zc.frame_round_border(null, obj);
+						}
+
 						canvas.requestRenderAll();
 					}
 				);
@@ -422,17 +434,12 @@ $(document).ready(function () {
 				obj.cropDrag(
 					plc_obj,
 					function () {
-
 						if (obj.replaced) {
 							setTimeout(function () {
-								//applyImageBorders();
-
 								if (('clipPath' in obj) && obj.clipPath && ('my' in obj) && obj.my.hasBorder == 'ON' && ('frame_round_border' in obj) && obj.frame_round_border && ('hasBorder' in obj.my)) {
-
 									zc.frame_round_border(obj.frame_round_border, obj);
 								}
 								else if (('cropX' in obj || 'cropY' in obj) || (obj.cx != 0 || obj.cy != 0 || obj.cw != obj.width || obj.ch != obj.height)) {
-
 									zc.frame_round_border(null, obj);
 								}
 							}, 200);
@@ -634,7 +641,7 @@ $(document).ready(function () {
 			obj.my.offsety = plc_obj.my.offsety * plc_obj.scaleX / globalScale;
 		}
 		if (plc_obj.my.corner_radius != "0") {
-			obj.my.corner_radius = plc_obj.my.corner_radius / 2 / globalScale;
+			obj.my.corner_radius = plc_obj.my.corner_radius / globalScale;
 		}
 		//if (plc_obj.my.oval_width != "0")
 		//obj.my.oval_width = Math.round(plc_obj.my.oval_width*plc_obj.scaleX);
@@ -712,13 +719,14 @@ $(document).ready(function () {
 					originY: 'center'
 				})
 			} else if (plc_obj.my.frame_style == "square") {
+				const validRadius = getValidRadiusWithPlc(plc_obj.my.oval_rx, plc_obj.my.oval_ry, obj)
 				obj.clipPath = new fabric.Rect({
 					left: -plc_obj.my.oval_rx / 2,
 					top: -plc_obj.my.oval_ry / 2,
 					width: plc_obj.my.oval_rx,
 					height: plc_obj.my.oval_ry,
-					rx: obj.my.corner_radius,
-					ry: obj.my.corner_radius,
+					rx: validRadius,
+					ry: validRadius,
 				})
 			}
 		}
@@ -1343,12 +1351,13 @@ $(document).ready(function () {
 		$(".border_image_btn").attr("disabled", true);
 	}
 
-	var selectionType = ''	
+	var selectionType = ''
 	const selectionOccured = () => {
 		let objs = canvas.getActiveObjects()
 		if (objs.length === 1) {
 			selectionType = 'single'
 			objectSelected(objs[0])
+			console.log(objs[0])
 		} else {
 			selectionType = 'multi'
 			createObjectsMenu()
@@ -1361,7 +1370,6 @@ $(document).ready(function () {
 	});
 
 	loadMenuValues = function (obj) {
-
 		if (otype == 'Textbox') {
 			//font
 			$("#font_text_fontsize").val(obj.fontSize);
@@ -2038,6 +2046,8 @@ $(document).ready(function () {
 		let obj = canvas.getActiveObject()
 		const pt = new fabric.Point(canvas.width / 2, obj.getCenterPoint().y);
 		obj.setPositionByOrigin(pt, 'center', 'center');
+		dirty = true;
+		saveState();
 		canvas.renderAll()
 		if (obj.type === "activeSelection") {
 			createObjectsMenu();
@@ -2050,6 +2060,8 @@ $(document).ready(function () {
 		let obj = canvas.getActiveObject()
 		const pt = new fabric.Point(obj.getCenterPoint().x, canvas.height / 2);
 		obj.setPositionByOrigin(pt, 'center', 'center');
+		dirty = true;
+		saveState();
 		canvas.renderAll()
 		if (obj.type === "activeSelection") {
 			createObjectsMenu();
@@ -2187,7 +2199,7 @@ $(document).ready(function () {
 	{
 		crop_timer_set = false;
 		clearInterval(crop_timer);
-		ignoreStateSave = true;
+ 		ignoreStateSave = true;
 		//update border and filters now
 		if (!skipAfterZoom)
 			updateAfterZoom(false, true, true);
@@ -2230,38 +2242,157 @@ $(document).ready(function () {
 
 	$('#canvas_div').on('click', ".copy_object", function (e) {
 		const objs = canvas.getActiveObjects()
-
 		if (objs.length === 1) {
-			let clone = fabric.util.object.clone(objs[0]);
+			if (objs[0].type === 'CzImage') {
+				objs[0].clone(cloned => {
+					const temp = cloned.filters
 
-			clone.set({
-				top: clone.get('top') + 50 * globalScale,
-				left: clone.get('left') + 50 * globalScale,
-				itemID: itemID++
-			});
+					cloned.set({
+						top: cloned.get('top') + 50 * globalScale,
+						left: cloned.get('left') + 50 * globalScale,
+						itemID: objs[0].itemID++,
+						filters: []
+					});
 
-			canvas.add(clone);
-			dirty = true;
-			clonedObject = true;
-			saveState();
-		} else {
-			objs.forEach(obj => {
-				canvas.setActiveObject(obj)
-				let clone = fabric.util.object.clone(obj);
-				clone.set({
-					top: obj.top + 50 * globalScale,
-					left: obj.left + 50 * globalScale,
+					if (cloned.type === 'CzImage') {
+						if (temp && temp.length > 0) {
+							temp.map(e => {
+								if (e.type === "Brightness") {
+									cloned.filters.push(new fabric.Image.filters.Brightness({ brightness: toValidFilterValue(e.brightness) }))
+								} else if (e.type === "Contrast") {
+									cloned.filters.push(new fabric.Image.filters.Contrast({ contrast: toValidFilterValue(e.contrast) }))
+								} else {
+									cloned.filters.push(new fabric.Image.filters.Grayscale());
+								}
+							})
+						} else {
+							cloned.filters = [new fabric.Image.filters.Brightness({ brightness: 0.01 })]
+						}
+						cloned.applyFilters();
+					}
+
+					if (cloned.frame_round_border && cloned.my && cloned.my.frame_style) {
+						setClipPath(cloned);
+						zc.frame_round_border(cloned.frame_round_border, cloned);
+					}
+
+					canvas.add(cloned);
+					dirty = true;
+					clonedObject = true;
+					saveState();
+				})
+			} else if (objs[0].type === 'Textbox') {
+				let cloned = new fabric.Textbox(objs[0].text, {
+					fontFamily: objs[0].fontFamily,
+					fontSize: objs[0].fontSize,
+					left: objs[0].left + 50 *globalScale,
+					top: objs[0].top + 50 * globalScale,
+					width: objs[0].width,
+					cornerSize: 20,
+					fill: objs[0].fill,
+					padding: 7,
+					borderDashArray: [10, 5],
+					hasRotatingPoint: false,
+					type: 'Textbox',
+					originX: 'center',
+					originY: 'center',
+					scaleX: globalScale,
+					scaleY: globalScale,
+					lockScalingY: false,
+					stroke: objs[0].stroke,
+					strokeWidth: objs[0].strokeWidth,
+					fontStyle: objs[0].fontStyle,
+					textDecoration: objs[0].textDecoration,
+					lineHeight: objs[0].lineHeight,
+					textAlign: objs[0].textAlign,
+					shadow: objs[0].shadow ? objs[0].shadow : null,
+					opacity: objs[0].opacity,
 					itemID: itemID++
 				});
-	
-				canvas.add(clone);
+				canvas.add(cloned);
 				dirty = true;
 				clonedObject = true;
 				saveState();
+			}
+		} else {
+			objs.forEach(obj => {
+				canvas.setActiveObject(obj)
+				
+				if (obj.type === 'CzImage') {
+					obj.clone(cloned => {
+						const temp = cloned.filters
+
+						cloned.set({
+							top: cloned.get('top') + 50 * globalScale,
+							left: cloned.get('left') + 50 * globalScale,
+							itemID: obj.itemID++,
+							filters: []
+						});
+
+						if (cloned.type === 'CzImage') {
+							if (temp && temp.length > 0) {
+								temp.map(e => {
+									if (e.type === "Brightness") {
+										cloned.filters.push(new fabric.Image.filters.Brightness({ brightness: toValidFilterValue(e.brightness) }))
+									} else if (e.type === "Contrast") {
+										cloned.filters.push(new fabric.Image.filters.Contrast({ contrast: toValidFilterValue(e.contrast) }))
+									} else {
+										cloned.filters.push(new fabric.Image.filters.Grayscale());
+									}
+								})
+							} else {
+								cloned.filters = [new fabric.Image.filters.Brightness({ brightness: 0.01 })]
+							}
+							cloned.applyFilters();
+						}
+
+						if (cloned.frame_round_border && cloned.my && cloned.my.frame_style) {
+							setClipPath(cloned);
+							zc.frame_round_border(cloned.frame_round_border, cloned);
+						}
+
+						canvas.add(cloned);
+						dirty = true;
+						clonedObject = true;
+						saveState();
+					})
+				} else {
+					let cloned = new fabric.Textbox(obj.text, {
+						fontFamily: obj.fontFamily,
+						fontSize: obj.fontSize,
+						left: obj.left + 50 *globalScale,
+						top: obj.top + 50 * globalScale,
+						width: obj.width,
+						cornerSize: 20,
+						fill: obj.fill,
+						padding: 7,
+						borderDashArray: [10, 5],
+						hasRotatingPoint: false,
+						type: 'Textbox',
+						originX: 'center',
+						originY: 'center',
+						scaleX: globalScale,
+						scaleY: globalScale,
+						lockScalingY: false,
+						stroke: obj.stroke,
+						strokeWidth: obj.strokeWidth,
+						fontStyle: obj.fontStyle,
+						textDecoration: obj.textDecoration,
+						lineHeight: obj.lineHeight,
+						textAlign: obj.textAlign,
+						shadow: obj.shadow ? obj.shadow : null,
+						opacity: obj.opacity,
+						itemID: itemID++
+					});
+					canvas.add(cloned);
+					dirty = true;
+					clonedObject = true;
+					saveState();
+				}
 			})
 			$(".all_menus").remove()
-			
-			var sel = new fabric.ActiveSelection(objs, {canvas: canvas,});
+
+			var sel = new fabric.ActiveSelection(objs, { canvas: canvas, });
 			canvas.setActiveObject(sel);
 			canvas.requestRenderAll();
 		}
@@ -2283,15 +2414,19 @@ $(document).ready(function () {
 	});
 
 	$('#canvas_div').on('click', ".v-flip-image", function (e) {
-		let obj = canvas.getActiveObject()
-		obj.set('flipX', !obj.flipX)
-		canvas.renderAll()
+		let obj = canvas.getActiveObject();
+		obj.set('flipX', !obj.flipX);
+		dirty = true;
+		saveState();
+		canvas.renderAll();
 	})
 
 	$('#canvas_div').on('click', ".h-flip-image", function (e) {
-		let obj = canvas.getActiveObject()
-		obj.set('flipY', !obj.flipY)
-		canvas.renderAll()
+		let obj = canvas.getActiveObject();
+		obj.set('flipY', !obj.flipY);
+		dirty = true;
+		saveState();
+		canvas.renderAll();
 	})
 
 	$("#canvas_div").on('click', ".exit_flip_mode", function (e) {
@@ -2308,7 +2443,12 @@ $(document).ready(function () {
 
 		if (obj.filters && obj.filters.length > 0) {
 			$.each(obj.filters, function (k, v) {
-				if (v && v.type.toLowerCase() == filter.toLowerCase()) {
+				if (filter === 'Grayscale') {
+					if (v && Object.keys(v).length === 0) {
+						index = k;
+						return false;
+					}
+				} else if (Object.keys(v)[0].toLowerCase() === filter.toLowerCase()) {
 					index = k;
 					return false;
 				}
@@ -2320,6 +2460,7 @@ $(document).ready(function () {
 	$('#canvas_div').on('change', "#brightness_image_value", function (e) {
 		var objs = canvas.getActiveObjects();
 		var b = Number($("#brightness_image_value").val());
+		b = b === 0 ? 1 : b
 		var images = objs.reduce((prev, cur) => {
 			if (cur.type === 'CzImage')
 				return [...prev, cur]
@@ -2340,7 +2481,8 @@ $(document).ready(function () {
 			else if (b != 0 && x >= 0)
 				obj.filters[x].brightness = val;
 			else
-				delete obj.filters[x ? x : 0];
+				// delete obj.filters[x ? x : 0];
+				obj.filters.splice(x ? x : 0, 1);
 
 			obj.applyFilters();
 			dirty = true;
@@ -2351,6 +2493,7 @@ $(document).ready(function () {
 
 	$('#canvas_div').on('change', "#contrast_image_value", function (e) {
 		var objs = canvas.getActiveObjects();
+
 		var b = Number($("#contrast_image_value").val());
 		var images = objs.reduce((prev, cur) => {
 			if (cur.type === 'CzImage')
@@ -2363,6 +2506,7 @@ $(document).ready(function () {
 		updateBrightConValues("contrast", b);
 
 		images.forEach(obj => {
+			console.log('apply contrast = ', obj)
 			var x = findFilter(obj, 'Contrast');
 			// var val = Math.round(b * 2.55) / 100;
 			var val = b / 100
@@ -2372,7 +2516,8 @@ $(document).ready(function () {
 			else if (b != 0 && x >= 0)
 				obj.filters[x].contrast = val;
 			else
-				delete obj.filters[x ? x : 0];
+				// delete obj.filters[x ? x : 0];
+				obj.filters.splice(x ? x : 0, 1);
 
 			obj.applyFilters();
 			dirty = true;
@@ -2499,7 +2644,8 @@ $(document).ready(function () {
 			else {
 				var x = findFilter(obj, 'Grayscale');
 				obj.my.hasGrayscale = 'OFF';
-				delete obj.filters[x ? x : 0];
+				// delete obj.filters[x ? x : 0];
+				obj.filters.splice(x ? x : 0, 1);
 			}
 			obj.applyFilters();
 			dirty = true;
@@ -2787,20 +2933,6 @@ $(document).ready(function () {
 			
 		  });*/
 
-	function roundedImage(ctx, x, y, width, height, radius) {
-		ctx.beginPath();
-		ctx.moveTo(x + radius, y);
-		ctx.lineTo(x + width - radius, y);
-		ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-		ctx.lineTo(x + width, y + height - radius);
-		ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-		ctx.lineTo(x + radius, y + height);
-		ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-		ctx.lineTo(x, y + radius);
-		ctx.quadraticCurveTo(x, y, x + radius, y);
-		ctx.closePath();
-	}
-
 	function updateImageBorder(data, next) {
 
 		var r = $("#border_image_status").val();
@@ -2858,7 +2990,6 @@ $(document).ready(function () {
 
 				var ow = obj.get('width'); //this seems to get the orignial width where getWidth gets the current width.
 				var oh = obj.get('height');
-
 
 				var cir = {
 					radius: Number(radius),
@@ -3050,8 +3181,21 @@ $(document).ready(function () {
 		return d;
 	}
 
-	function updateImageFrameRadius(next) {
+	function getValidRadius(obj) {
+		const maxRadius = Math.min(obj.height, obj.width) / 2;
+		const radius = obj.my.corner_radius <= maxRadius ? obj.my.corner_radius : maxRadius;
 
+		return radius;
+	}
+
+	function getValidRadiusWithPlc(width, height, obj) {
+		const maxRadius = Math.min(height, width) / 2;
+		const radius = obj.my.corner_radius <= maxRadius ? obj.my.corner_radius : maxRadius;
+
+		return radius;
+	}
+
+	function updateImageFrameRadius(next) {
 		var st = $("#border_image_status").val();
 		var obj = canvas.getActiveObject();
 		var render = false;
@@ -3150,14 +3294,21 @@ $(document).ready(function () {
 					obj.my.stroke = $("#border_image_colorpicker").spectrum("get").toRgbString();
 					obj.my.corner_radius = Number($('#border_image_radius').val());
 
-					obj.clipPath = null
+					const validRadius = getValidRadius(obj);
+
+					if (obj.my.corner_radius > validRadius) {
+						obj.my.corner_radius = validRadius;
+						$('#border_image_radius').val(validRadius)
+					}
+
+					obj.clipPath = null;
 					obj.clipPath = new fabric.Rect({
 						left: -obj.width / 2,
 						top: -obj.height / 2,
 						width: obj.width,
 						height: obj.height,
-						rx: obj.my.corner_radius,
-						ry: obj.my.corner_radius,
+						rx: validRadius,
+						ry: validRadius,
 					})
 				}
 				else //oval
@@ -3250,46 +3401,8 @@ $(document).ready(function () {
 		render ? renderAfter(obj) : canvas.renderAll()
 	}
 
-	function addRoundedRect(obj) {
-		var object = new fabric.Rect({
-			left: obj.left,
-			top: obj.top,
-			width: obj.width,
-			height: obj.height,
-			originX: 'left',
-			originY: 'top',
-			stroke: '#000000',
-			fill: 'transparent',
-			strokeWidth: 10,
-			opacity: 1
-		});
-		canvas.add(object);
-		canvas.renderAll();
-	}
-
-	fabric.Object.drawRoundRect = function (ctx, x, y, width, height, radius, border = false) {
-		var x1 = x - width / 2
-		var y1 = y - height / 2
-		if (border) {
-			x1 = x;
-			y1 = y;
-		}
-		ctx.beginPath();
-		ctx.moveTo(x1 + radius, y1);
-		ctx.lineTo(x1 + width - radius, y1);
-		ctx.quadraticCurveTo(x1 + width, y1, x1 + width, y1 + radius);
-		ctx.lineTo(x1 + width, y1 + height - radius);
-		ctx.quadraticCurveTo(x1 + width, y1 + height, x1 + width - radius, y1 + height);
-		ctx.lineTo(x1 + radius, y1 + height);
-		ctx.quadraticCurveTo(x1, y1 + height, x1, y1 + height - radius);
-		ctx.lineTo(x1, y1 + radius);
-		ctx.quadraticCurveTo(x1, y1, x1 + radius, y1);
-		ctx.closePath();
-	}
-
 	$('#canvas_div').on('click', ".exit_image_border_mode", function (e) {
 		resetBorderMode();
-
 	});
 
 	function resetBorderMode() {
@@ -3297,7 +3410,6 @@ $(document).ready(function () {
 		$("#bottom_image_menu_div").show();
 		$("#top_image_menu").css("visibility", "");
 	}
-
 
 	function addPicker() {
 		$(".colorpicker").spectrum({
@@ -3344,7 +3456,7 @@ $(document).ready(function () {
 			textDecoration: 'normal',
 			lineHeight: 1,
 			textAlign: 'left',
-			itemID: itemID++,
+			itemID: itemID++
 		});
 
 		canvas.add(obj).setActiveObject(obj);
@@ -3578,7 +3690,6 @@ $(document).ready(function () {
 				is_placeholder_obj = false;
 			}
 			if (is_placeholder_obj && type !== "clipart") {
-
 				obj.hoverCursor = "crosshair";
 				// obj.scaleX /= 2;
 				// obj.scaleY /= 2;
@@ -3802,7 +3913,8 @@ $(document).ready(function () {
 				strokeWidth: 1,
 				selectable: false,
 				strokeDashArray: [5, 5],
-				bottom: true
+				bottom: true,
+				hoverCursor: 'default'
 			});
 		}
 
@@ -4211,6 +4323,7 @@ $(document).ready(function () {
 				_data.objects[i].text = detailData[i].text
 				_data.objects[i].fontSize = detailData[i].fontSize
 				_data.objects[i].fontFamily = detailData[i].fontFamily
+				_data.objects[i].textAlign = detailData[i].textAlign
 			}
 		}
 
@@ -4223,6 +4336,10 @@ $(document).ready(function () {
 				return val; // return as is
 		};
 
+		if (canvas.backgroundOpacity) {
+			_data.backgroundOpacity = canvas.backgroundOpacity
+		}
+		
 		if (_data.backgroundImage) {
 			if (_data.backgroundImage.src.indexOf('http') === 0) {
 				_data.backgroundImage.src = new URL(_data.backgroundImage.src).pathname
@@ -4369,10 +4486,40 @@ $(document).ready(function () {
 		})
 	}
 
-	function setCanvasOpacityValue() {
-		let opacity = 100
-		if (canvas.backgroundImage && canvas.backgroundImage.opacity) opacity = canvas.backgroundImage.opacity * 100
-		$("#background-opacity").val(opacity)
+	function setClipPath(obj) {
+		obj.clipPath = null
+		if (obj.my.frame_style == "round") {
+			obj.clipPath = new fabric.Circle({
+				top: obj.my.y,
+				left: obj.my.x,
+				radius: obj.my.circle_radius,
+				startAngle: 0,
+				angle: Math.PI * 2,
+				originX: "center",
+				originY: "center"
+			})
+		} else if (obj.my.frame_style == "oval") {
+			obj.clipPath = new fabric.Ellipse({
+				left: obj.my.x,
+				top: obj.my.y,
+				rx: obj.my.oval_rx / 2,
+				ry: obj.my.oval_ry / 2,
+				angle: 0,
+				originX: 'center',
+				originY: 'center'
+			})
+		} else if (obj.my.frame_style == "square") {
+			const validRadius = getValidRadius(obj)
+
+			obj.clipPath = new fabric.Rect({
+				left: -obj.width / 2,
+				top: -obj.height / 2,
+				width: obj.width,
+				height: obj.height,
+				rx: validRadius,
+				ry: validRadius,
+			})
+		}
 	}
 
 	function loadCanvas() {
@@ -4441,6 +4588,14 @@ $(document).ready(function () {
 							t.backgroundImage.src = new URL(t.backgroundImage.src).pathname;
 						}
 					}
+					console.log(t)
+
+					if (t.backgroundOpacity) {
+						$("#background-opacity").val(t.backgroundOpacity)
+					} else {
+						$("#background-opacity").val(100)
+					}
+
 					$.each(t.objects, function (k, v) {
 						if (v.primarySrc && v.primarySrc.indexOf('http') === 0) {
 							v.primarySrc = new URL(v.primarySrc).pathname;
@@ -4465,9 +4620,9 @@ $(document).ready(function () {
 							obj.stroke = 'rgb(0, 0, 0)';
 						}
 
-						if (!obj.hasBorders) {
-							obj.hasBorders = true
-						}
+						// if (!obj.hasBorders) {
+						// 	obj.hasBorders = true
+						// }
 
 						if (obj.my && obj.my.stroke == "") {
 							obj.my.stroke = 'rgb(0, 0, 0)';
@@ -4475,50 +4630,23 @@ $(document).ready(function () {
 						}
 
 						if (obj.filters && obj.filters.length > 0) {
-							obj.tempFilters = obj.filters
-							obj.filters = []
+							obj.tempFilters = obj.filters;
+							obj.filters = [];
 						}
 
-						if (obj.my && obj.my.frame_style) {
-							obj.clipPath = null
-							if (obj.my.frame_style == "round") {
-								obj.clipPath = new fabric.Circle({
-									top: obj.my.y,
-									left: obj.my.x,
-									radius: obj.my.circle_radius,
-									startAngle: 0,
-									angle: Math.PI * 2,
-									originX: "center",
-									originY: "center"
-								})
-							} else if (obj.my.frame_style == "oval") {
-								obj.clipPath = new fabric.Ellipse({
-									left: obj.my.x,
-									top: obj.my.y,
-									rx: obj.my.oval_rx / 2,
-									ry: obj.my.oval_ry / 2,
-									angle: 0,
-									originX: 'center',
-									originY: 'center'
-								})
-							} else if (obj.my.frame_style == "square") {
-								obj.clipPath = new fabric.Rect({
-									left: -obj.width / 2,
-									top: -obj.height / 2,
-									width: obj.width,
-									height: obj.height,
-									rx: obj.my.corner_radius,
-									ry: obj.my.corner_radius,
-								})
-							}
+						obj.clipPath = null
+						if (obj.frame_round_border && obj.my && obj.my.frame_style) {
+							setClipPath(obj);
 						}
 
+						if (obj.type === 'line') {
+							obj.selectable = false;
+						}
 					});
 
 					console.log('before load from json')
 					canvas.loadFromJSON(t, function () {
 						console.log('after load from json')
-						setCanvasOpacityValue()
 						applyImageBorders();
 						setTimeout(function () {
 							showTextBoxes();
@@ -4586,13 +4714,13 @@ $(document).ready(function () {
 		grid_size = grid * globalScale;
 
 		for (var i = 1; i < ((grid_width - 2 * safe1) / grid_size); i++) {
-			vLine = new fabric.Line([(i * grid_size) + safe1, 0 + safe1, (i * grid_size) + safe1, grid_height - safe1], { stroke: '#ccc', selectable: false, name: 'gridLine', bottom: true });
+			vLine = new fabric.Line([(i * grid_size) + safe1, 0 + safe1, (i * grid_size) + safe1, grid_height - safe1], { stroke: '#ccc', selectable: false, name: 'gridLine', bottom: true, hoverCursor: 'default' });
 			canvas.add(vLine);
 			canvas.sendToBack(vLine);
 		}
 
 		for (var i = 1; i < ((grid_height - 2 * safe1) / grid_size); i++) {
-			hLine = new fabric.Line([0 + safe1, (i * grid_size) + safe1, grid_width - safe1, (i * grid_size) + safe1], { stroke: '#ccc', selectable: false, name: 'gridLine', bottom: true });
+			hLine = new fabric.Line([0 + safe1, (i * grid_size) + safe1, grid_width - safe1, (i * grid_size) + safe1], { stroke: '#ccc', selectable: false, name: 'gridLine', bottom: true, hoverCursor: 'default' });
 			canvas.add(hLine);
 			canvas.sendToBack(hLine);
 		}
@@ -4721,9 +4849,10 @@ $(document).ready(function () {
 			data = { "p": thisPage }
 		}
 		else if (is_staff_page()) {
-			req = '/red/yrb_pges/pg_lk_ajax';
-			//data = "p="+thisTemplate;
-			data = { "p": thisTemplate };
+			return
+			// req = '/red/yrb_pges/pg_lk_ajax';
+			// //data = "p="+thisTemplate;
+			// data = { "p": thisTemplate };
 		}
 
 		$.ajax({
@@ -5808,8 +5937,8 @@ $(document).ready(function () {
 		if ($(this).hasClass("color")) {
 			//remove any image
 			canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
-
-			canvas.setBackgroundColor($(this).css("background-color"), canvas.renderAll.bind(canvas));
+			const rgba = newRgba($(this).css("background-color"), $("#background-opacity").val() / 100)
+			canvas.setBackgroundColor(rgba, canvas.renderAll.bind(canvas));
 			$(".bg_used").remove();
 			html = '<div title="Color Used" class="bg_used" style="position:absolute;bottom:0px;right:0px;"><img style="height:30px; width:30px;" class="check_mark" src="' + img_path + 'green_check_circle.png"></div>';
 			$(this).append(html);
@@ -5846,7 +5975,8 @@ $(document).ready(function () {
 	$('#background_div').on('click', "#remove_background", function (e) {
 		canvas.setBackgroundColor('', canvas.renderAll.bind(canvas));
 		canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
-
+		canvas.backgroundOpacity = 100
+		$("#background-opacity").val(100)
 		$(".bg_used").remove();
 
 		dirty = true;
@@ -6199,14 +6329,41 @@ $(document).ready(function () {
 		saveState();
 	});
 
+	function newRgba(rgb, alpha) {
+		let colors = ["red", "green", "blue", "alpha"]
+	  
+		let colorArr = rgb.slice(
+			rgb.indexOf("(") + 1, 
+			rgb.indexOf(")")
+		).split(", ");
+	  
+		let obj = new Object();
+	  
+		colorArr.forEach((k, i) => {
+			obj[colors[i]] = k
+		})
+	  
+		obj.alpha = alpha
+		return `rgb(${obj.red}, ${obj.green}, ${obj.blue}, ${obj.alpha})`
+	}
+
 	// change background opacity and flip
 	$("#background-opacity").change(e => {
-		if (canvas.backgroundImage) {
+		if (canvas.backgroundImage || canvas.backgroundColor) {
 			let value = parseInt(e.target.value)
 			if (value < 0) value = 0
 			else if (value > 100) value = 100
-			canvas.backgroundImage.opacity = value / 100
+
+			if (canvas.backgroundImage) {
+				canvas.backgroundImage.opacity = value / 100
+			}
+
+			if (canvas.backgroundColor) {
+				canvas.backgroundColor = newRgba(canvas.backgroundColor, value / 100)
+			}
+			canvas.backgroundOpacity = value
 			e.target.value = value
+
 			canvas.renderAll()
 		}
 	})
