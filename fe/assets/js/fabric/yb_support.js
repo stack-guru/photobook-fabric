@@ -1175,7 +1175,7 @@ $(document).ready(function () {
 				h += '							<option value="normal">Normal</option>';
 				h += '							<option value="underline">Underline</option>';
 				h += '							<option value="overline">Overline</option>';
-				h += '							<option value="line-through">Line-Through</option>';
+				h += '							<option value="linethrough">Line-Through</option>';
 				h += '						</select>';
 				h += '					</div>';
 				h += '				</div>';
@@ -1356,8 +1356,8 @@ $(document).ready(function () {
 		let objs = canvas.getActiveObjects()
 		if (objs.length === 1) {
 			selectionType = 'single'
-			objectSelected(objs[0])
 			console.log(objs[0])
+			objectSelected(objs[0])
 		} else {
 			selectionType = 'multi'
 			createObjectsMenu()
@@ -2159,7 +2159,6 @@ $(document).ready(function () {
 	var crop_timer, zoom_once;
 	var crop_timer_set = false, zoom_reset = false;
 	$('#canvas_div').on('mousedown', ".crop_btn", function (e) {
-
 		//if image is not zoomed we dont want to let arrows work.		
 		var obj = canvas.getActiveObject();
 		if (obj.width == obj.cw && obj.height == obj.ch && (this.width >= this.origWidth && this.height >= this.origHeight))
@@ -2238,157 +2237,101 @@ $(document).ready(function () {
 
 	}
 
+	function cloneText(obj) {
+		let cloned = new fabric.Textbox(obj.text, {
+			fontFamily: obj.fontFamily,
+			fontSize: obj.fontSize,
+			left: obj.left + 50 *globalScale,
+			top: obj.top + 50 * globalScale,
+			width: obj.width,
+			cornerSize: 20,
+			fill: obj.fill,
+			padding: 7,
+			borderDashArray: [10, 5],
+			hasRotatingPoint: false,
+			type: 'Textbox',
+			originX: 'center',
+			originY: 'center',
+			scaleX: globalScale,
+			scaleY: globalScale,
+			lockScalingY: false,
+			stroke: obj.stroke,
+			strokeWidth: obj.strokeWidth,
+			fontStyle: obj.fontStyle,
+			textDecoration: obj.textDecoration,
+			lineHeight: obj.lineHeight,
+			textAlign: obj.textAlign,
+			shadow: obj.shadow ? obj.shadow : null,
+			opacity: obj.opacity,
+			itemID: itemID++
+		});
+
+		cloned.set(obj.textDecoration, true);
+		return cloned;
+	}
+
+	function addCloneImage(obj) {
+		obj.clone(cloned => {
+			const tempFilters = cloned.filters
+
+			cloned.set({
+				top: cloned.get('top') + 50 * globalScale,
+				left: cloned.get('left') + 50 * globalScale,
+				itemID: obj.itemID++,
+				filters: [],
+				my: Object.assign({}, cloned.my)
+			});
+
+			if (cloned.type === 'CzImage') {
+				if (tempFilters && tempFilters.length > 0) {
+					tempFilters.map(e => {
+						if (e.type === "Brightness") {
+							cloned.filters.push(new fabric.Image.filters.Brightness({ brightness: toValidFilterValue(e.brightness) }))
+						} else if (e.type === "Contrast") {
+							cloned.filters.push(new fabric.Image.filters.Contrast({ contrast: toValidFilterValue(e.contrast) }))
+						} else {
+							cloned.filters.push(new fabric.Image.filters.Grayscale());
+						}
+					})
+				} else {
+					cloned.filters = [new fabric.Image.filters.Brightness({ brightness: 0.01 })]
+				}
+				cloned.applyFilters();
+			}
+
+			if (cloned.frame_round_border && cloned.my && cloned.my.frame_style) {
+				setClipPath(cloned);
+				zc.frame_round_border(cloned.frame_round_border, cloned);
+			}
+
+			canvas.add(cloned);
+		})
+	}
+
 	var clonedObject = false;
 
 	$('#canvas_div').on('click', ".copy_object", function (e) {
 		const objs = canvas.getActiveObjects()
 		if (objs.length === 1) {
 			if (objs[0].type === 'CzImage') {
-				objs[0].clone(cloned => {
-					const temp = cloned.filters
-
-					cloned.set({
-						top: cloned.get('top') + 50 * globalScale,
-						left: cloned.get('left') + 50 * globalScale,
-						itemID: objs[0].itemID++,
-						filters: []
-					});
-
-					if (cloned.type === 'CzImage') {
-						if (temp && temp.length > 0) {
-							temp.map(e => {
-								if (e.type === "Brightness") {
-									cloned.filters.push(new fabric.Image.filters.Brightness({ brightness: toValidFilterValue(e.brightness) }))
-								} else if (e.type === "Contrast") {
-									cloned.filters.push(new fabric.Image.filters.Contrast({ contrast: toValidFilterValue(e.contrast) }))
-								} else {
-									cloned.filters.push(new fabric.Image.filters.Grayscale());
-								}
-							})
-						} else {
-							cloned.filters = [new fabric.Image.filters.Brightness({ brightness: 0.01 })]
-						}
-						cloned.applyFilters();
-					}
-
-					if (cloned.frame_round_border && cloned.my && cloned.my.frame_style) {
-						setClipPath(cloned);
-						zc.frame_round_border(cloned.frame_round_border, cloned);
-					}
-
-					canvas.add(cloned);
-					dirty = true;
-					clonedObject = true;
-					saveState();
-				})
+				addCloneImage(objs[0]);
 			} else if (objs[0].type === 'Textbox') {
-				let cloned = new fabric.Textbox(objs[0].text, {
-					fontFamily: objs[0].fontFamily,
-					fontSize: objs[0].fontSize,
-					left: objs[0].left + 50 *globalScale,
-					top: objs[0].top + 50 * globalScale,
-					width: objs[0].width,
-					cornerSize: 20,
-					fill: objs[0].fill,
-					padding: 7,
-					borderDashArray: [10, 5],
-					hasRotatingPoint: false,
-					type: 'Textbox',
-					originX: 'center',
-					originY: 'center',
-					scaleX: globalScale,
-					scaleY: globalScale,
-					lockScalingY: false,
-					stroke: objs[0].stroke,
-					strokeWidth: objs[0].strokeWidth,
-					fontStyle: objs[0].fontStyle,
-					textDecoration: objs[0].textDecoration,
-					lineHeight: objs[0].lineHeight,
-					textAlign: objs[0].textAlign,
-					shadow: objs[0].shadow ? objs[0].shadow : null,
-					opacity: objs[0].opacity,
-					itemID: itemID++
-				});
-				canvas.add(cloned);
-				dirty = true;
-				clonedObject = true;
-				saveState();
+				canvas.add(cloneText(objs[0]));
 			}
+			dirty = true;
+			clonedObject = true;
+			saveState();
 		} else {
 			objs.forEach(obj => {
 				canvas.setActiveObject(obj)
-				
 				if (obj.type === 'CzImage') {
-					obj.clone(cloned => {
-						const temp = cloned.filters
-
-						cloned.set({
-							top: cloned.get('top') + 50 * globalScale,
-							left: cloned.get('left') + 50 * globalScale,
-							itemID: obj.itemID++,
-							filters: []
-						});
-
-						if (cloned.type === 'CzImage') {
-							if (temp && temp.length > 0) {
-								temp.map(e => {
-									if (e.type === "Brightness") {
-										cloned.filters.push(new fabric.Image.filters.Brightness({ brightness: toValidFilterValue(e.brightness) }))
-									} else if (e.type === "Contrast") {
-										cloned.filters.push(new fabric.Image.filters.Contrast({ contrast: toValidFilterValue(e.contrast) }))
-									} else {
-										cloned.filters.push(new fabric.Image.filters.Grayscale());
-									}
-								})
-							} else {
-								cloned.filters = [new fabric.Image.filters.Brightness({ brightness: 0.01 })]
-							}
-							cloned.applyFilters();
-						}
-
-						if (cloned.frame_round_border && cloned.my && cloned.my.frame_style) {
-							setClipPath(cloned);
-							zc.frame_round_border(cloned.frame_round_border, cloned);
-						}
-
-						canvas.add(cloned);
-						dirty = true;
-						clonedObject = true;
-						saveState();
-					})
-				} else {
-					let cloned = new fabric.Textbox(obj.text, {
-						fontFamily: obj.fontFamily,
-						fontSize: obj.fontSize,
-						left: obj.left + 50 *globalScale,
-						top: obj.top + 50 * globalScale,
-						width: obj.width,
-						cornerSize: 20,
-						fill: obj.fill,
-						padding: 7,
-						borderDashArray: [10, 5],
-						hasRotatingPoint: false,
-						type: 'Textbox',
-						originX: 'center',
-						originY: 'center',
-						scaleX: globalScale,
-						scaleY: globalScale,
-						lockScalingY: false,
-						stroke: obj.stroke,
-						strokeWidth: obj.strokeWidth,
-						fontStyle: obj.fontStyle,
-						textDecoration: obj.textDecoration,
-						lineHeight: obj.lineHeight,
-						textAlign: obj.textAlign,
-						shadow: obj.shadow ? obj.shadow : null,
-						opacity: obj.opacity,
-						itemID: itemID++
-					});
-					canvas.add(cloned);
-					dirty = true;
-					clonedObject = true;
-					saveState();
+					addCloneImage(obj);
+				} else if (obj.type === 'Textbox') {
+					canvas.add(cloneText(obj));
 				}
+				dirty = true;
+				clonedObject = true;
+				saveState();
 			})
 			$(".all_menus").remove()
 
@@ -2862,6 +2805,13 @@ $(document).ready(function () {
 		$("#top_text_menu").css("visibility", "");
 	}
 
+	function clearTextDecoration(obj) {
+		if (obj.normal) delete obj.normal
+		if (obj.underline) delete obj.underline
+		if (obj.overline) delete obj.overline
+		if (obj.linethrough) delete obj.linethrough
+	}
+
 	function updateText(data) {
 
 		var obj = canvas.getActiveObject();
@@ -2899,8 +2849,12 @@ $(document).ready(function () {
 			obj.set('fill', fill);
 		if (data.textAlign)
 			obj.set('textAlign', textAlign);
-		if (data.textDecoration)
+		if (data.textDecoration) {
 			obj.set('textDecoration', textDecoration);
+			clearTextDecoration(obj);
+			textDecoration != 'normal' && obj.set(textDecoration, true);
+			obj.dirty = true;
+		}
 		if (data.lineHeight)
 			obj.set('lineHeight', lineHeight);
 		if (data.stroke)
@@ -4324,6 +4278,8 @@ $(document).ready(function () {
 				_data.objects[i].fontSize = detailData[i].fontSize
 				_data.objects[i].fontFamily = detailData[i].fontFamily
 				_data.objects[i].textAlign = detailData[i].textAlign
+				_data.objects[i].lineHeight = detailData[i].lineHeight
+				_data.objects[i].textDecoration = detailData[i].textDecoration
 			}
 		}
 
@@ -4477,9 +4433,10 @@ $(document).ready(function () {
 
 	loadFonts()
 
-	function showTextBoxes() {
+	function showTextBoxesAndSetDecoration() {
 		canvas.forEachObject(function (obj) {
 			if (obj.type == "Textbox") {
+				if (obj.textDecoration) obj.set(obj.textDecoration, true);
 				obj.set('dirty', true)
 				obj.visible = true
 			}
@@ -4588,7 +4545,6 @@ $(document).ready(function () {
 							t.backgroundImage.src = new URL(t.backgroundImage.src).pathname;
 						}
 					}
-					console.log(t)
 
 					if (t.backgroundOpacity) {
 						$("#background-opacity").val(t.backgroundOpacity)
@@ -4649,7 +4605,7 @@ $(document).ready(function () {
 						console.log('after load from json')
 						applyImageBorders();
 						setTimeout(function () {
-							showTextBoxes();
+							showTextBoxesAndSetDecoration();
 							applyImageFilters();
 							applyStateProperties();
 							ticks = [];
