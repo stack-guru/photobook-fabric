@@ -318,7 +318,8 @@ $(document).ready(function () {
 							ctx.stroke();
 						}
 						else { // this.round_border == "Square
-							ctx.roundRect(obj.my.x, obj.my.y, oWidth, oHeight, obj.my.corner_radius);
+							// ctx.roundRect(obj.my.x, obj.my.y, oWidth, oHeight, obj.my.corner_radius);
+							drawRoundRect(ctx, obj.my.x + oWidth / 2, obj.my.y + oHeight / 2, oWidth, oHeight, obj.my.corner_radius)
 							ctx.stroke();
 						}
 					}
@@ -379,6 +380,28 @@ $(document).ready(function () {
 			});
 		}, null, object.crossOrigin);
 	};
+
+	function drawRoundRect(ctx, x, y, width, height, radius, border = false) {
+		var x1 = x - width / 2
+		var y1 = y - height / 2
+		if (border) {
+			x1 = x;
+			y1 = y;
+		}
+
+		radius = radius * 1.15
+		ctx.beginPath();
+		ctx.moveTo(x1 + radius, y1);
+		ctx.lineTo(x1 + width - radius, y1);
+		ctx.quadraticCurveTo(x1 + width, y1, x1 + width, y1 + radius);
+		ctx.lineTo(x1 + width, y1 + height - radius);
+		ctx.quadraticCurveTo(x1 + width, y1 + height, x1 + width - radius, y1 + height);
+		ctx.lineTo(x1 + radius, y1 + height);
+		ctx.quadraticCurveTo(x1, y1 + height, x1, y1 + height - radius);
+		ctx.lineTo(x1, y1 + radius);
+		ctx.quadraticCurveTo(x1, y1, x1 + radius, y1);
+		ctx.closePath();
+	}
 
 	var zc = {
 		canvas: null,
@@ -1356,7 +1379,6 @@ $(document).ready(function () {
 		let objs = canvas.getActiveObjects()
 		if (objs.length === 1) {
 			selectionType = 'single'
-			console.log(objs[0])
 			objectSelected(objs[0])
 		} else {
 			selectionType = 'multi'
@@ -2198,7 +2220,7 @@ $(document).ready(function () {
 	{
 		crop_timer_set = false;
 		clearInterval(crop_timer);
- 		ignoreStateSave = true;
+		ignoreStateSave = true;
 		//update border and filters now
 		if (!skipAfterZoom)
 			updateAfterZoom(false, true, true);
@@ -2241,7 +2263,7 @@ $(document).ready(function () {
 		let cloned = new fabric.Textbox(obj.text, {
 			fontFamily: obj.fontFamily,
 			fontSize: obj.fontSize,
-			left: obj.left + 50 *globalScale,
+			left: obj.left + 50 * globalScale,
 			top: obj.top + 50 * globalScale,
 			width: obj.width,
 			cornerSize: 20,
@@ -2271,6 +2293,7 @@ $(document).ready(function () {
 	}
 
 	function addCloneImage(obj) {
+		canvas.discardActiveObject();
 		obj.clone(cloned => {
 			const tempFilters = cloned.filters
 
@@ -2281,6 +2304,8 @@ $(document).ready(function () {
 				filters: [],
 				my: Object.assign({}, cloned.my)
 			});
+
+			canvas.setActiveObject(cloned)
 
 			if (cloned.type === 'CzImage') {
 				if (tempFilters && tempFilters.length > 0) {
@@ -2302,6 +2327,8 @@ $(document).ready(function () {
 			if (cloned.frame_round_border && cloned.my && cloned.my.frame_style) {
 				setClipPath(cloned);
 				zc.frame_round_border(cloned.frame_round_border, cloned);
+			} else if (obj.primarySrc.includes('placeholder')) {
+				cloned.rerender(false, () => canvas.renderAll());
 			}
 
 			canvas.add(cloned);
@@ -2971,14 +2998,19 @@ $(document).ready(function () {
 			}
 		}
 		else {
-
 			obj.my.hasBorder = 'OFF';
+			obj.my.frame_style = 'square';
+			obj.my.corner_radius = 0;
+			obj.my.stroke = 'rgb(0,0,0)';
+			obj.my.strokeWidth = 1;
 
+			loadMenuValues(obj);
 			//remove border	
 			obj.stroke = '#000000';
 			obj.strokeWidth = 0;
 			obj.strokeDashArray = [];
 			obj.strokeLineJoin = 'miter';
+			obj.clipPath = null
 
 			zc.frame_round_border(null, obj);
 
@@ -4295,7 +4327,7 @@ $(document).ready(function () {
 		if (canvas.backgroundOpacity) {
 			_data.backgroundOpacity = canvas.backgroundOpacity
 		}
-		
+
 		if (_data.backgroundImage) {
 			if (_data.backgroundImage.src.indexOf('http') === 0) {
 				_data.backgroundImage.src = new URL(_data.backgroundImage.src).pathname
@@ -6287,18 +6319,18 @@ $(document).ready(function () {
 
 	function newRgba(rgb, alpha) {
 		let colors = ["red", "green", "blue", "alpha"]
-	  
+
 		let colorArr = rgb.slice(
-			rgb.indexOf("(") + 1, 
+			rgb.indexOf("(") + 1,
 			rgb.indexOf(")")
 		).split(", ");
-	  
+
 		let obj = new Object();
-	  
+
 		colorArr.forEach((k, i) => {
 			obj[colors[i]] = k
 		})
-	  
+
 		obj.alpha = alpha
 		return `rgb(${obj.red}, ${obj.green}, ${obj.blue}, ${obj.alpha})`
 	}
