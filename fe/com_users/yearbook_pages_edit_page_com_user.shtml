@@ -81,9 +81,9 @@ div#footer {
 }
 
 .list_image.active {
-    background-color: whitesmoke;
-    border: 4px solid #22FF00;
-    cursor:pointer;
+	background-color: whitesmoke;
+	border: 4px solid #22FF00;
+	cursor:pointer;
 }
 
 div.client_border {
@@ -472,9 +472,9 @@ div.client_border:hover {
 									<div class="col-md-3">
 									<button type="button" id="upload_photos" style="padding: 1px 5px; font-size:14px;" class="btn btn-default mobile_button">Upload Additional Photos <i style="font-size: 1.2em;" class="fa fa-upload"></i></button>			 
 									</div>
-		                            <div class="col-md-3">
-        		                        <button type="button" id="add_photo_to_canvas" class="btn btn-primary mobile_button btn-sm">Add To Canvas</button>
-                		            </div>
+									<div class="col-md-3">
+										<button type="button" id="add_photo_to_canvas" class="btn btn-primary mobile_button btn-sm">Add To Canvas</button>
+									</div>
 									<div id="photo_message" class="col-md-2 small"></div>
 								</div>
 							</div>
@@ -519,12 +519,12 @@ div.client_border:hover {
 								<div class="form-group col-md-2">
 									<div id="clipart_message" class="" style="clear:both; color:red"></div>
 								</div>
-		                        <div class="form-group col-md-2">
-		                            <label id="role_label" for="" class="control-label text-right">&nbsp;</label>
-		                            <div class="">
-		                                <button type="button" id="add_clipart_to_canvas" class="btn btn-primary mobile_button btn-sm">Add To Canvas</button>
-		                            </div>
-		                        </div>
+								<div class="form-group col-md-2">
+									<label id="role_label" for="" class="control-label text-right">&nbsp;</label>
+									<div class="">
+										<button type="button" id="add_clipart_to_canvas" class="btn btn-primary mobile_button btn-sm">Add To Canvas</button>
+									</div>
+								</div>
 							</div>
 							<div style="overflow-y:hidden; overflow-x:auto; clear:both;">
 								<div id="clipart_thumbs" class="text-left" style="width:;height:110px; "></div> 
@@ -576,7 +576,7 @@ div.client_border:hover {
 								<div class="form-group col-md-1" title="Border Opacity">
 									<label for="border-opacity" class="control-label text-right">Opacity:</label>
 									<div class="">
-										<input type="number" min="1" max="100" class="form-control" name="" id="border-opacity" value="100">
+										<input type="number" min="1" max="100" class="form-control" name="" id="border-opacity">
 									</div>
 								</div>
 								<div class="form-group col-md-3" title="Flip Border">
@@ -821,11 +821,13 @@ div.client_border:hover {
 					</div>
 					<div class="form-group" style="margin-bottom: 30px;">
 						<div>&nbsp;</div>
-				   		<div class="undo_div col-md-6" style="display:;" >			 
+						<div class="undo_div col-md-6" style="display:;" >
+<!-- 
 							<ul class="nav">
 								<button disabled="disabled" type="button" class="undo btn btn-primary mobile_button btn-sm"><i style="font-size: 1.2em;" class="fa fa-undo"></i> Undo</button>
 								<button disabled="disabled" type="button" class="redo btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-repeat"></i> Redo</button>
-						   </ul>				
+							</ul>
+-->							
 						</div>
 						<div class="zoom_div col-md-6 text-right" style="display:;">
 							<ul class="nav">
@@ -837,23 +839,23 @@ div.client_border:hover {
 							</ul>				
 						</div>
 					</div>
-
-
 					<div id="canvas_container">
 						<div class="" id="canvas_size" style="">					 
-						  <div id="canvas_div" class="center-block" style="position:relative;">
-							<p>
-							  <canvas id="c"></canvas>			  
-							</p>
-						  </div>			
+							<div id="canvas_div" class="center-block" style="position:relative;">
+								<p>
+									<canvas id="c"></canvas>			  
+								</p>
+							</div>			
 						</div>
 					</div> 
 					<div class="form-group" style="margin-bottom:40px;">			
-				   		<div class="undo_div col-md-6" style="display:;" >			 
+						<div class="undo_div col-md-6" style="display:;" >
+<!--
 							<ul class="nav">
 								<button disabled="disabled" type="button" class="undo btn btn-primary mobile_button btn-sm"><i style="font-size: 1.2em;" class="fa fa-undo"></i> Undo</button>
 								<button disabled="disabled" type="button" class="redo btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-repeat"></i> Redo</button>
-							</ul>				
+							</ul>
+-->
 						</div>
 						<div class="zoom_div col-md-6 text-right" style="display:;">
 							<ul class="nav">
@@ -862,10 +864,9 @@ div.client_border:hover {
 								<button type="button" class="canvas-zoom-out btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-search-minus"></i> Zoom Out</button>
 								<button type="button" class="canvas-zoom-reset btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-search"></i> Zoom Reset</button>
 								<button style="margin-left:20px;" type="button" class="print_draft btn btn-primary mobile_button btn-sm inline-block-left-space-fix"><i style="font-size: 1.2em;" class="fa fa-print"></i> Print Draft</button>
-							</ul>				
+							</ul>
 						</div>
 					</div>
-
 				</div>
 			</div>
 		</div>

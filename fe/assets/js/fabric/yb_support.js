@@ -264,6 +264,8 @@ $(document).ready(function () {
 				img1.objWidth = obj.getScaledWidth();
 				img1.objHeight = obj.getScaledHeight();
 
+				let plcScale = obj.my.plcScale || 1;
+
 				img1.onload = function () {
 					var _canvas = fabric.util.createCanvasElement(), img2 = new Image();
 					_canvas.width = obj.width;
@@ -283,8 +285,9 @@ $(document).ready(function () {
 
 						var d = obj.frame_round_border;
 						ctx.setLineDash(d.strokeDashArray);
-						// ctx.fillStyle = 'transparent';
-						ctx.lineWidth = d.strokeWidth + 3;
+						ctx.fillStyle = 'transparent';
+						const strokeWidth = d.strokeWidth
+						ctx.lineWidth = strokeWidth * plcScale;
 						ctx.strokeStyle = d.stroke;
 
 						if (this.round_border === 'round') {
@@ -319,7 +322,7 @@ $(document).ready(function () {
 						}
 						else { // this.round_border == "Square
 							// ctx.roundRect(obj.my.x, obj.my.y, oWidth, oHeight, obj.my.corner_radius);
-							drawRoundRect(ctx, obj.my.x + oWidth / 2, obj.my.y + oHeight / 2, oWidth, oHeight, obj.my.corner_radius)
+							drawRoundRect(ctx, obj.my.x + oWidth / 2, obj.my.y + oHeight / 2, oWidth, oHeight, obj.my.corner_radius * plcScale)
 							ctx.stroke();
 						}
 					}
@@ -656,7 +659,7 @@ $(document).ready(function () {
 		//obj.my.radius = Math.round(plc_obj.my.radius*plc_obj.scaleX);
 		// obj.width = plc_obj.width * plc_obj.scaleX / globalScale;
 		// obj.height = plc_obj.height * plc_obj.scaleY / globalScale
-		obj.my.radius = plc_obj.my.radius * plc_obj.scaleX / globalScale;
+		obj.my.radius = plc_obj.my.radius;
 		if (plc_obj.my.offsetx != "0") {
 			obj.my.offsetx = plc_obj.my.offsetx * plc_obj.scaleX / globalScale;
 		}
@@ -664,7 +667,7 @@ $(document).ready(function () {
 			obj.my.offsety = plc_obj.my.offsety * plc_obj.scaleX / globalScale;
 		}
 		if (plc_obj.my.corner_radius != "0") {
-			obj.my.corner_radius = plc_obj.my.corner_radius / globalScale;
+			obj.my.corner_radius = plc_obj.my.corner_radius;
 		}
 		//if (plc_obj.my.oval_width != "0")
 		//obj.my.oval_width = Math.round(plc_obj.my.oval_width*plc_obj.scaleX);
@@ -682,7 +685,7 @@ $(document).ready(function () {
 			obj.my.circle_radius = plc_obj.my.circle_radius * plc_obj.scaleX / globalScale;
 		}
 		if (plc_obj.my.strokeWidth > 0) {
-			obj.my.strokeWidth = plc_obj.my.strokeWidth * plc_obj.scaleX / globalScale;
+			obj.my.strokeWidth = plc_obj.my.strokeWidth;
 			obj.my.strokeWidth = obj.my.strokeWidth >= 1 ? obj.my.strokeWidth : 1;
 		}
 		if (plc_obj.my.oval_rx != 0) {
@@ -695,8 +698,10 @@ $(document).ready(function () {
 		obj.set("frame_round_border", plc_obj.frame_round_border);
 		//scale things a bit.
 		if (plc_obj.frame_round_border) {
+			console.log('placeholder fram round border')
+
 			//if (plc_obj.frame_round_border.radius > 0)
-			obj.frame_round_border.radius = plc_obj.frame_round_border.radius / globalScale;
+			obj.frame_round_border.radius = plc_obj.frame_round_border.radius;
 			//if (plc_obj.frame_round_border.rx > 0)
 			//obj.frame_round_border.rx = Math.round(plc_obj.frame_round_border.rx*plc_obj.scaleX);
 			//if (plc_obj.frame_round_border.ry > 0)
@@ -712,7 +717,7 @@ $(document).ready(function () {
 			//if (plc_obj.frame_round_border.offsety != 0)
 			//obj.frame_round_border.offsety = Math.round(plc_obj.frame_round_border.offsety*plc_obj.scaleX);
 			if (plc_obj.frame_round_border.strokeWidth > 0) {
-				obj.frame_round_border.strokeWidth = plc_obj.frame_round_border.strokeWidth * plc_obj.scaleX / globalScale;
+				obj.frame_round_border.strokeWidth = plc_obj.frame_round_border.strokeWidth;
 			}
 		}
 
@@ -742,7 +747,8 @@ $(document).ready(function () {
 					originY: 'center'
 				})
 			} else if (plc_obj.my.frame_style == "square") {
-				const validRadius = getValidRadiusWithPlc(plc_obj.my.oval_rx, plc_obj.my.oval_ry, obj)
+				const validRadius = getValidRadiusWithPlc(plc_obj.my.oval_rx, plc_obj.my.oval_ry, obj) * plc_obj.scaleX / globalScale;
+				
 				obj.clipPath = new fabric.Rect({
 					left: -plc_obj.my.oval_rx / 2,
 					top: -plc_obj.my.oval_ry / 2,
@@ -756,18 +762,22 @@ $(document).ready(function () {
 
 		obj.set("angle", plc_obj.angle);
 		obj.set("stroke", plc_obj.stroke);
-		obj.set("strokeWidth", plc_obj.strokeWidth * plc_obj.scaleX / globalScale);
+		obj.set("strokeWidth", plc_obj.strokeWidth);
 		obj.set("strokeLineJoin", plc_obj.strokeLineJoin);
 		obj.set("strokeDashArray", plc_obj.strokeDashArray);
+		plc_obj.strokeMiterLimit && obj.set("strokeMiterLimit", plc_obj.strokeMiterLimit)
+		plc_obj.strokeLineCap && obj.set("strokeLineCap", plc_obj.strokeLineCap)
+
+		obj.my.plcScale = plc_obj.scaleX / globalScale
 
 		if (plc_obj.shadow) {
 			obj.set("shadow", plc_obj.shadow);
 			if (plc_obj.shadow.blur > 0)
-				obj.shadow.blur = Math.round(plc_obj.shadow.blur * plc_obj.scaleX / globalScale);
+				obj.shadow.blur = Math.round(plc_obj.shadow.blur);
 			if (plc_obj.shadow.offsetX > 0)
-				obj.shadow.offsetX = Math.round(plc_obj.shadow.offsetX * plc_obj.scaleX / globalScale);
+				obj.shadow.offsetX = Math.round(plc_obj.shadow.offsetX);
 			if (plc_obj.shadow.offsetY > 0)
-				obj.shadow.offsetY = Math.round(plc_obj.shadow.offsetY * plc_obj.scaleX / globalScale);
+				obj.shadow.offsetY = Math.round(plc_obj.shadow.offsetY);
 		}
 
 		obj.set("filters", plc_obj.filters);
@@ -1641,30 +1651,24 @@ $(document).ready(function () {
 	function preventDragOffCanvas(e) {
 
 		var obj = e.target;
+		var cPoint = obj.getCenterPoint();
 
-		var halfw = obj.getScaledWidth() / 2;
-		var halfh = obj.getScaledHeight() / 2;
-		var bounds = {
-			tl: { x: -halfw, y: -halfh },
-			br: { x: obj.canvas.width - halfw, y: obj.canvas.height - halfh }
-		};
-
-		// top-left  corner
-		if (obj.top < bounds.tl.y || obj.left < bounds.tl.x) {
-			obj.top = Math.max(obj.top, bounds.tl.y);
-			obj.left = Math.max(obj.left, bounds.tl.x)
-		}
-
-		// bot-right corner
-		if (obj.top > bounds.br.y || obj.left > bounds.br.x) {
-			obj.top = Math.min(obj.top, bounds.br.y);
-			obj.left = Math.min(obj.left, bounds.br.x)
-		}
-
+		// keep the center in the canvas
+		if (cPoint.x < 0)
+			obj.left -= cPoint.x;
+		else if (cPoint.x > obj.canvas.width)
+			obj.left -= cPoint.x - obj.canvas.width;
+		
+		if (cPoint.y < 0)
+			obj.top -= cPoint.y;
+		else if (cPoint.y > obj.canvas.height)
+			obj.top -= cPoint.y - obj.canvas.height;
 	}
 
 	canvas.on('mouse:up', function (e) {
 		$(".all_menus").show()
+
+		if (e.target) console.log(e.target)
 
 		if (e.target && e.target._objects && e.target._objects.length > 1)
 			createObjectsMenu()
@@ -1683,10 +1687,10 @@ $(document).ready(function () {
 			preventDragOffCanvas(e);
 
 			if (snap_grid && grid_showing) {
-				//snap to grid			
+				//snap to grid
 				e.target.set({
-					left: (Math.round(e.target.left / (grid_size * globalScale)) * (grid_size * globalScale)) + (safe * globalScale),
-					top: (Math.round(e.target.top / (grid_size * globalScale)) * (grid_size * globalScale)) + (safe * globalScale)
+					left: (Math.round((e.target.left - (safe * globalScale)) / (grid_size * globalScale)) * (grid_size * globalScale)) + (safe * globalScale),
+					top:  (Math.round((e.target.top  - (safe * globalScale)) / (grid_size * globalScale)) * (grid_size * globalScale)) + (safe * globalScale)
 				});
 			}
 		}
@@ -3293,8 +3297,8 @@ $(document).ready(function () {
 						top: -obj.height / 2,
 						width: obj.width,
 						height: obj.height,
-						rx: validRadius,
-						ry: validRadius,
+						rx: validRadius * (obj.my.plcScale || 1),
+						ry: validRadius * (obj.my.plcScale || 1),
 					})
 				}
 				else //oval
@@ -3856,6 +3860,7 @@ $(document).ready(function () {
 			return new fabric.Line(coords, {
 				stroke: color,
 				strokeWidth: 2,
+				strokeUniform:true,
 				selectable: false,
 				name: 'tick',
 				bottom: true
@@ -3897,6 +3902,7 @@ $(document).ready(function () {
 			return new fabric.Line(coords, {
 				stroke: color,
 				strokeWidth: 1,
+				strokeUniform:true,
 				selectable: false,
 				strokeDashArray: [5, 5],
 				bottom: true,
@@ -4505,8 +4511,8 @@ $(document).ready(function () {
 				top: -obj.height / 2,
 				width: obj.width,
 				height: obj.height,
-				rx: validRadius,
-				ry: validRadius,
+				rx: validRadius * (obj.my.plcScale || 1),
+				ry: validRadius * (obj.my.plcScale || 1),
 			})
 		}
 	}
@@ -4702,13 +4708,13 @@ $(document).ready(function () {
 		grid_size = grid * globalScale;
 
 		for (var i = 1; i < ((grid_width - 2 * safe1) / grid_size); i++) {
-			vLine = new fabric.Line([(i * grid_size) + safe1, 0 + safe1, (i * grid_size) + safe1, grid_height - safe1], { stroke: '#ccc', selectable: false, name: 'gridLine', bottom: true, hoverCursor: 'default' });
+			vLine = new fabric.Line([(i * grid_size) + safe1, 0 + safe1, (i * grid_size) + safe1, grid_height - safe1], { stroke: '#ccc', strokeWidth: 1, strokeUniform:true, selectable: false, name: 'gridLine', bottom: true, hoverCursor: 'default' });
 			canvas.add(vLine);
 			canvas.sendToBack(vLine);
 		}
 
 		for (var i = 1; i < ((grid_height - 2 * safe1) / grid_size); i++) {
-			hLine = new fabric.Line([0 + safe1, (i * grid_size) + safe1, grid_width - safe1, (i * grid_size) + safe1], { stroke: '#ccc', selectable: false, name: 'gridLine', bottom: true, hoverCursor: 'default' });
+			hLine = new fabric.Line([0 + safe1, (i * grid_size) + safe1, grid_width - safe1, (i * grid_size) + safe1], { stroke: '#ccc', strokeWidth: 1, strokeUniform:true, selectable: false, name: 'gridLine', bottom: true, hoverCursor: 'default' });
 			canvas.add(hLine);
 			canvas.sendToBack(hLine);
 		}
@@ -6157,8 +6163,8 @@ $(document).ready(function () {
 			format: 'jpg',
 			left: trim,
 			top: trim,
-			width: canvas.width - (trim * 2),
-			height: canvas.height - (trim * 2),
+			width: canvas.width - (trim * 2)+1,
+			height: canvas.height - (trim * 2)+1,
 			quality: 1,
 			multiplier: 1
 		});
