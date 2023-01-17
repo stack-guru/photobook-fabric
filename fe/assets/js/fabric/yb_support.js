@@ -1126,7 +1126,6 @@ $(document).ready(function () {
 				h += '	<div id="font_text_div" class="" style="display:none;">';
 				h += '		<div class="panel panel-default">';
 				h += '			<div class="panel-body form-horizontal">';
-
 				h += '				<div class="form-group">';
 				h += '					<label for="font_text_fontsize" class="col-md-7 text-left control-label small">Font Size:</label>';
 				h += '					<div class="col-md-5">';
@@ -1142,13 +1141,16 @@ $(document).ready(function () {
 				h += '					<div class="col-md-9">';
 				h += '						<select class="form-control small font_option" id="font_text_fontfamily" >';
 
-				var default_fonts = ['Arial', 'Calibri', 'Courier New', 'Myriad Pro', 'Delicious', 'Verdana', 'Georgia', 'Courier', 'Comic Sans MS', 'Impact', 'Monaco'];
+				var default_fonts = ['Arial', 'Calibri', 'Courier New', 'Myriad Pro', 'Delicious', 'Verdana', 'Georgia', 'Courier', 'Comic Sans MS', 'Impact', 'Monaco', 
+									'Arimo', 'Arimo:bold', 'Arimo:italic', 'Arimo:bolditalic'];
+
 				if (fonts.length > 0) {
 					var newFonts = $.merge(default_fonts, fonts);
 					newFonts.sort();
 				}
 				else
 					var newFonts = default_fonts;
+
 
 				$.each(newFonts, function (i, v) {
 					var k = v.split(":");
@@ -1385,7 +1387,7 @@ $(document).ready(function () {
 	}
 
 	var selectionType = ''
-	const selectionOccured = () => {
+	const selectionOccured = (o) => {
 		let objs = canvas.getActiveObjects()
 		if (objs.length === 1) {
 			selectionType = 'single'
@@ -2284,6 +2286,7 @@ $(document).ready(function () {
 			stroke: obj.stroke,
 			strokeWidth: obj.strokeWidth,
 			fontStyle: obj.fontStyle,
+			fontWeight: obj.fontWeight,
 			textDecoration: obj.textDecoration,
 			lineHeight: obj.lineHeight,
 			textAlign: obj.textAlign,
@@ -2292,6 +2295,7 @@ $(document).ready(function () {
 			itemID: itemID++
 		});
 
+		cloned.set('newCloned', true);
 		cloned.set(obj.textDecoration, true);
 		return cloned;
 	}
@@ -2306,9 +2310,9 @@ $(document).ready(function () {
 				left: cloned.get('left') + 50 * globalScale,
 				itemID: obj.itemID++,
 				filters: [],
-				my: Object.assign({}, cloned.my)
+				my: Object.assign({}, cloned.my),
 			});
-
+			cloned.set('newCloned', true);
 			canvas.setActiveObject(cloned)
 
 			if (cloned.type === 'CzImage') {
@@ -2347,8 +2351,12 @@ $(document).ready(function () {
 			if (objs[0].type === 'CzImage') {
 				addCloneImage(objs[0]);
 			} else if (objs[0].type === 'Textbox') {
-				canvas.add(cloneText(objs[0]));
+				canvas.discardActiveObject();
+				const cloned = cloneText(objs[0])
+				canvas.setActiveObject(cloned)
+				canvas.add(cloned);
 			}
+
 			dirty = true;
 			clonedObject = true;
 			saveState();
@@ -2366,9 +2374,27 @@ $(document).ready(function () {
 			})
 			$(".all_menus").remove()
 
-			var sel = new fabric.ActiveSelection(objs, { canvas: canvas, });
-			canvas.setActiveObject(sel);
 			canvas.requestRenderAll();
+
+			//set selection for new cloned objects
+			setTimeout(() => {
+				const allObjs = canvas.getObjects()
+				const newCloned = allObjs.reduce((prev, cur) => {
+					if (cur.newCloned === true) {
+						prev = [...prev, cur]
+					}
+					return prev
+				}, [])
+				console.log('newcloned = ', newCloned)
+				var sel = new fabric.ActiveSelection(newCloned, { canvas: canvas, });
+				canvas.setActiveObject(sel);
+
+				// clear new cloned property
+				newCloned.forEach(e => {
+					delete e.newCloned
+				})			
+			}, 100);
+
 		}
 	});
 
@@ -2844,9 +2870,7 @@ $(document).ready(function () {
 	}
 
 	function updateText(data) {
-
 		var obj = canvas.getActiveObject();
-
 
 		var d = GetTextValues();
 		UpdateTextValues(d);
@@ -2868,12 +2892,13 @@ $(document).ready(function () {
 		var stroke = $("#font_text_fontstroke_colorpicker").spectrum("get").toRgbString();
 		var strokeWidth = Number(d.strokeWidth);
 
-
-		if (data.fontFamily || data.fontStyle || data.fontWeight) {
-			obj.set('fontFamily', fontFamily);
+		if (data.fontStyle || data.fontWeight || data.fontFamily) {
 			obj.set('fontStyle', fontStyle);
 			obj.set('fontWeight', fontWeight);
+			obj.set('fontFamily', fontFamily);
+			obj.dirty = true
 		}
+		
 		if (data.fontSize)
 			obj.set('fontSize', fontSize);
 		if (data.fill)
@@ -2893,10 +2918,10 @@ $(document).ready(function () {
 		if (data.strokeWidth)
 			obj.set('strokeWidth', strokeWidth);
 
+		console.log('text object = ', obj)
 
 		canvas.renderAll();
 		adjust_menu(obj);
-
 	}
 
 
@@ -4312,9 +4337,12 @@ $(document).ready(function () {
 		const detailData = canvas.getObjects()
 		for (var i = 0; i < _data.objects.length; i++) {
 			if (_data.objects[i].type == 'Textbox') {
+				console.log('textbox save = ', _data.objects[i])
 				_data.objects[i].text = detailData[i].text
 				_data.objects[i].fontSize = detailData[i].fontSize
 				_data.objects[i].fontFamily = detailData[i].fontFamily
+				_data.objects[i].fontWeight = detailData[i].fontWeight
+				_data.objects[i].fontStyle = detailData[i].fontStyle
 				_data.objects[i].textAlign = detailData[i].textAlign
 				_data.objects[i].lineHeight = detailData[i].lineHeight
 				_data.objects[i].textDecoration = detailData[i].textDecoration
@@ -4610,17 +4638,19 @@ $(document).ready(function () {
 
 						obj.lockMovementX = obj.lockMovementY = obj.lockScalingX = obj.lockScalingY = obj.lockRotation = false;
 
-						if (!obj.my) {
-							obj.stroke = 'rgb(0, 0, 0)';
-						}
-
 						// if (!obj.hasBorders) {
 						// 	obj.hasBorders = true
 						// }
 
-						if (obj.my && obj.my.stroke == "") {
-							obj.my.stroke = 'rgb(0, 0, 0)';
-							obj.stroke = 'rgb(0, 0, 0)';
+						if (obj.type === "CzImage") {
+							if (!obj.my) {
+								obj.stroke = 'rgb(0, 0, 0)';
+							}
+	
+							if (obj.my && obj.my.stroke == "") {
+								obj.my.stroke = 'rgb(0, 0, 0)';
+								obj.stroke = 'rgb(0, 0, 0)';
+							}
 						}
 
 						if (obj.filters && obj.filters.length > 0) {
